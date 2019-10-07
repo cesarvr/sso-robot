@@ -19,10 +19,10 @@ pipeline {
                     echo "AGENT: ${AGENT_POD} for NS: ${PROJECT}"
 
                     echo "Testing plugin integration"
-                    testPluginIntegration(NS, AGENT_POD)
+                    testPluginIntegration(AGENT_POD)
 
                     echo "Testing roles mapping..."
-                    testingCorrectRoleAssignment(NS, AGENT_POD)
+                    testingCorrectRoleAssignment(AGENT_POD)
 
 
                  }
@@ -47,13 +47,14 @@ def getRunningPod(CLUSTER, namespace, label) {
 }
 
 def testPluginIntegration(NS, podName) {
+
     echo "testPluginIntegration: ${podName}"
     sh 'rm -f result.json'
-    sh 'oc exec ' + NS + podName + ' -- rm -f test_result.json'
+    sh "oc exec -n ${PROJECT} ${podName} -- rm -f test_result.json"
 
     echo 'Authenticating against Red Hat SSO'
-    sh 'oc exec ' + NS + podName + ' -- node ./scripts/testing-rhsso.js ${params.SSO_URL}'
-    sh 'oc cp '   + NS + podName + ':test_result.json result.json'
+    sh "oc exec -n ${PROJECT} ${podName} -- node ./scripts/testing-rhsso.js ${TARGET_URL}"
+    sh "oc cp -n ${PROJECT} ${podName}:test_result.json result.json"
 
     script {
         def result = readJSON file: 'result.json'
