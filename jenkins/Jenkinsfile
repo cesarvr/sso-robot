@@ -53,7 +53,7 @@ def testPluginIntegration(PROJECT, podName) {
     sh "oc exec -n ${PROJECT} ${podName} -- node sso.js -clear"
 
     echo 'Authenticating against Red Hat SSO'
-    sh "oc exec -n ${PROJECT} ${podName} -- node sso -url ${TARGET_URL} patrick demorealm"
+    sh "oc exec -n ${PROJECT} ${podName} -- node sso.js -url ${TARGET_URL} patrick demorealm"
     sh "oc cp -n ${PROJECT} ${podName}:test_result.json result.json"
 
     script {
