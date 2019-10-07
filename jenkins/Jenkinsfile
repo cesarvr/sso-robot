@@ -50,10 +50,10 @@ def testPluginIntegration(PROJECT, podName) {
 
     echo "testPluginIntegration: ${podName}"
     sh 'rm -f result.json'
-    sh "oc exec -n ${PROJECT} ${podName} -- rm -f test_result.json"
+    sh "oc exec -n ${PROJECT} ${podName} -- node sso.js -clear"
 
     echo 'Authenticating against Red Hat SSO'
-    sh "oc exec -n ${PROJECT} ${podName} -- node ./scripts/testing-rhsso.js ${TARGET_URL}"
+    sh "oc exec -n ${PROJECT} ${podName} -- node sso -url ${TARGET_URL} patrick demorealm"
     sh "oc cp -n ${PROJECT} ${podName}:test_result.json result.json"
 
     script {
@@ -70,10 +70,10 @@ def testPluginIntegration(PROJECT, podName) {
 def testingCorrectRoleAssignment(PROJECT, podName) {
     echo "testingCorrectRoleAssignment: ${podName}"
     sh "rm -f correct_role_assignment.json && sleep 2"
-    sh "oc exec -n ${PROJECT} ${podName} -- rm -f test_result.json"
+    sh "oc exec -n ${PROJECT} ${podName} -- node sso.js -clear"
 
     echo 'Authenticating against Red Hat SSO'
-    sh "oc exec -n ${PROJECT} ${podName} -- node ./scripts/testing-rhsso.js ${TARGET_URL} white"
+    sh "oc exec -n ${PROJECT} ${podName} -- node sso -url ${TARGET_URL} white demorealm"
     sh "oc cp -n ${PROJECT} ${podName}:test_result.json correct_role_assignment.json"
 
     script {
