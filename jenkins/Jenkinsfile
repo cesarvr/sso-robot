@@ -19,10 +19,10 @@ pipeline {
                     echo "AGENT: ${AGENT_POD} for NS: ${PROJECT}"
 
                     echo "Testing plugin integration"
-                    testPluginIntegration(AGENT_POD)
+                    testPluginIntegration(PROJECT, AGENT_POD)
 
                     echo "Testing roles mapping..."
-                    testingCorrectRoleAssignment(AGENT_POD)
+                    testingCorrectRoleAssignment(PROJECT, AGENT_POD)
 
 
                  }
@@ -46,7 +46,7 @@ def getRunningPod(CLUSTER, namespace, label) {
     }
 }
 
-def testPluginIntegration(podName) {
+def testPluginIntegration(PROJECT, podName) {
 
     echo "testPluginIntegration: ${podName}"
     sh 'rm -f result.json'
@@ -67,7 +67,7 @@ def testPluginIntegration(podName) {
     }
 }
 
-def testingCorrectRoleAssignment(podName) {
+def testingCorrectRoleAssignment(PROJECT, podName) {
     echo "testingCorrectRoleAssignment: ${podName}"
     sh "rm -f correct_role_assignment.json && sleep 2"
     sh "oc exec -n ${PROJECT} ${podName} -- rm -f test_result.json"
