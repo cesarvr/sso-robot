@@ -10,7 +10,7 @@ function get_token(json){
 }
 
 async function execute(){
-  let AUTH_HOST = 'https://secure-sso-sso-dev.apps.rhos.agriculture.gov.ie'
+  let AUTH_HOST = process.argv[2] || 'https://secure-sso-sso-dev.apps.rhos.agriculture.gov.ie'
   let USER = process.argv[3] || 'patrick'
 
   let oauth2_info = await discover(AUTH_HOST, 'demorealm')
