@@ -1,0 +1,88 @@
+def PROJECT = "cicd"
+
+pipeline {
+    agent any
+
+    tools {
+     maven 'Maven_3_9_9'
+    }
+
+    stages {
+
+        /*
+          Looking for an Agent
+        */
+        stage('Preparation'){
+            steps {
+                script{
+                    def AGENT_POD = getRunningPod(CLUSTER, 'cicd', 'sso-bot')
+                    echo "RHSSO pod: ${RHSSO_POD} | AGENT: ${AGENT_POD} for NS: ${PROJECT}"
+
+                    echo "Testing plugin integration"
+                    testPluginIntegration(NS, AGENT_POD)
+
+                    echo "Testing roles mapping..."
+                    testingCorrectRoleAssignment(NS, AGENT_POD)
+
+
+                 }
+            }
+        }
+    }
+}
+
+/*
+    ============================================== rest-user-storage-spi-jar-with-dependencies.jar ==============================================
+*/
+
+def getRunningPod(CLUSTER, namespace, label) {
+     println "Cluster ${CLUSTER}: namespace ${namespace} with label: ${label}"
+
+     openshift.withCluster( CLUSTER ) {
+        openshift.withProject( namespace ){
+            def rc = openshift.selector("pod" , [app: label] )
+            return rc.object()['metadata']['name']
+        }
+    }
+}
+
+def testPluginIntegration(NS, podName) {
+    echo "testPluginIntegration: ${podName}"
+    sh 'rm -f result.json'
+    sh 'oc exec ' + NS + podName + ' -- rm -f test_result.json'
+
+    echo 'Authenticating against Red Hat SSO'
+    sh 'oc exec ' + NS + podName + ' -- node ./scripts/testing-rhsso.js ${params.SSO_URL}'
+    sh 'oc cp '   + NS + podName + ':test_result.json result.json'
+
+    script {
+        def result = readJSON file: 'result.json'
+
+        assert result['name'] == 'PATRICK TORMEY'
+        assert result['ccsid'] == '1763314'
+        assert result['preferred_username'] == '4638814N'
+        assert result['given_name'] == 'PATRICK'
+        assert result['family_name'] == 'TORMEY'
+    }
+}
+
+def testingCorrectRoleAssignment(NS, podName) {
+    echo "testingCorrectRoleAssignment: ${podName}"
+    sh "rm -f correct_role_assignment.json && sleep 2"
+    sh "oc exec -n ${PROJECT} ${podName} -- rm -f test_result.json"
+
+    echo 'Authenticating against Red Hat SSO'
+    sh "oc exec -n ${PROJECT} ${podName} -- node ./scripts/testing-rhsso.js ${TARGET_URL} white"
+    sh "oc cp -n ${PROJECT} ${podName}:test_result.json correct_role_assignment.json"
+
+    script {
+        def result = readJSON file: 'correct_role_assignment.json'
+
+        assert result['name'] == 'PATRICK & MOIRA MANNION'
+        assert result['preferred_username'] == 'JAMES.WHITE'
+        assert result['given_name'] == 'PATRICK & MOIRA'
+        assert result['family_name'] == 'MANNION'
+        role = result['realm_access']['roles'].find { it == "aim_farmer" }
+        assert role == "aim_farmer"
+    }
+}
