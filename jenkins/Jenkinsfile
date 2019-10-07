@@ -54,7 +54,7 @@ def testPluginIntegration(PROJECT, podName) {
 
     echo 'Authenticating against Red Hat SSO'
     sh "oc exec -n ${PROJECT} ${podName} -- node sso.js -url ${TARGET_URL} patrick demorealm"
-    sh "oc cp -n ${PROJECT} ${podName}:test_result.json result.json"
+    sh "oc cp -n ${PROJECT} ${podName}:logs/test_result.json result.json"
 
     script {
         def result = readJSON file: 'result.json'
@@ -74,7 +74,7 @@ def testingCorrectRoleAssignment(PROJECT, podName) {
 
     echo 'Authenticating against Red Hat SSO'
     sh "oc exec -n ${PROJECT} ${podName} -- node sso -url ${TARGET_URL} white demorealm"
-    sh "oc cp -n ${PROJECT} ${podName}:test_result.json correct_role_assignment.json"
+    sh "oc cp -n ${PROJECT} ${podName}:logs/test_result.json correct_role_assignment.json"
 
     script {
         def result = readJSON file: 'correct_role_assignment.json'
