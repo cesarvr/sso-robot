@@ -46,7 +46,7 @@ def getRunningPod(CLUSTER, namespace, label) {
     }
 }
 
-def testPluginIntegration(NS, podName) {
+def testPluginIntegration(podName) {
 
     echo "testPluginIntegration: ${podName}"
     sh 'rm -f result.json'
@@ -67,7 +67,7 @@ def testPluginIntegration(NS, podName) {
     }
 }
 
-def testingCorrectRoleAssignment(NS, podName) {
+def testingCorrectRoleAssignment(podName) {
     echo "testingCorrectRoleAssignment: ${podName}"
     sh "rm -f correct_role_assignment.json && sleep 2"
     sh "oc exec -n ${PROJECT} ${podName} -- rm -f test_result.json"
