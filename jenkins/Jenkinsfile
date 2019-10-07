@@ -16,7 +16,7 @@ pipeline {
             steps {
                 script{
                     def AGENT_POD = getRunningPod(CLUSTER, 'cicd', 'sso-bot')
-                    echo "RHSSO pod: ${RHSSO_POD} | AGENT: ${AGENT_POD} for NS: ${PROJECT}"
+                    echo "AGENT: ${AGENT_POD} for NS: ${PROJECT}"
 
                     echo "Testing plugin integration"
                     testPluginIntegration(NS, AGENT_POD)
