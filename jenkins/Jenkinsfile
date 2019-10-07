@@ -73,7 +73,7 @@ def testingCorrectRoleAssignment(PROJECT, podName) {
     sh "oc exec -n ${PROJECT} ${podName} -- node sso.js -clear"
 
     echo 'Authenticating against Red Hat SSO'
-    sh "oc exec -n ${PROJECT} ${podName} -- node sso -url ${TARGET_URL} white demorealm"
+    sh "oc exec -n ${PROJECT} ${podName} -- node sso.js -url ${TARGET_URL} white demorealm"
     sh "oc cp -n ${PROJECT} ${podName}:logs/test_result.json correct_role_assignment.json"
 
     script {
