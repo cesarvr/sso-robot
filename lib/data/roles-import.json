@@ -1,0 +1,284 @@
+[{
+  "accountType": "INDIVIDUAL",
+  "id": 22127,
+  "username": "4638814N",
+  "forename": "PATRICK",
+  "surname": "TORMEY",
+  "description": "Online Services User",
+  "email": null,
+  "ppsn": "4638814N",
+  "personnel": null,
+  "grade": null,
+  "homeWorkarea": {
+    "id": 1,
+    "name": "holding",
+    "type": null,
+    "description": "[] Holding Work Area",
+    "customerId": 0,
+    "adminCode": 0
+  },
+
+  "authentication": {
+    "startDate": null,
+    "stopDate": null,
+    "passwordChangeInterval": 0,
+    "failedLoginAttempts": 0,
+    "lastSuccessfulLogin": "2019-09-07T06:00:03",
+    "dateOfTermsConditionsAcceptance": "2018-09-12T15:56:58",
+    "accountLocked": false,
+    "accountLockedDueToFailedLogons": false,
+    "accountOutsideValidityPeriod": false,
+    "disabled": false,
+    "passwordChangeRequested": false
+  },
+  "authorisations": {
+    "roles": [{
+      "id": 96020,
+      "name": "ismart_view_thematics",
+      "description": "GIS ismart view thematics",
+      "applicationId": 960
+    }, {
+      "id": 96012,
+      "name": "gis_inet_group",
+      "description": "GIS INET Group",
+      "applicationId": 960
+    }, {
+      "id": 96003,
+      "name": "ismart_users",
+      "description": "GIS iSmart Users",
+      "applicationId": 960
+    }, {
+      "id": 96004,
+      "name": "glasGroup",
+      "description": "GIS Glas Group",
+      "applicationId": 960
+    }, {
+      "id": 96005,
+      "name": "GreeningGroup",
+      "description": "GIS Greening Group",
+      "applicationId": 960
+    }, {
+      "id": 96006,
+      "name": "ismart_search_execute_sql",
+      "description": "GIS iSmart Search Execute SQL",
+      "applicationId": 960
+    }, {
+      "id": 96008,
+      "name": "ismart_edit_features",
+      "description": "GIS iSmart Edit Features",
+      "applicationId": 960
+    }, {
+      "id": 96009,
+      "name": "ismart_edit_attributes",
+      "description": "GIS iSmart Edit Attributes",
+      "applicationId": 960
+    }, {
+      "id": 96010,
+      "name": "ismart_enter_sql",
+      "description": "GIS iSmart Enter SQL",
+      "applicationId": 960
+    }, {
+      "id": 93352,
+      "name": "gcps_tcis_individual",
+      "description": "TAMS II TCIS Individual",
+      "applicationId": 930
+    }, {
+      "id": 93162,
+      "name": "gcps_ocis_individual",
+      "description": "TAMS II OCIS Individual",
+      "applicationId": 930
+    }, {
+      "id": 93122,
+      "name": "gcps_ppis_individual",
+      "description": "TAMS II PPIS Individual",
+      "applicationId": 930
+    }, {
+      "id": 93022,
+      "name": "gcps_yfcis_individual",
+      "description": "TAMS II YFCIS Individual",
+      "applicationId": 930
+    }, {
+      "id": 93062,
+      "name": "gcps_des_individual",
+      "description": "TAMS II DES Individual",
+      "applicationId": 930
+    }, {
+      "id": 93182,
+      "name": "gcps_dees_individual",
+      "description": "KT Dairy Scheme Individual",
+      "applicationId": 930
+    }, {
+      "id": 93202,
+      "name": "gcps_bs_individual",
+      "description": "KT Beef Scheme Individual",
+      "applicationId": 930
+    }, {
+      "id": 93282,
+      "name": "gcps_pys_individual",
+      "description": "KT Poultry Scheme Individual",
+      "applicationId": 930
+    }, {
+      "id": 93242,
+      "name": "gcps_ts_individual",
+      "description": "KT Tillage Scheme Individual",
+      "applicationId": 930
+    }, {
+      "id": 93302,
+      "name": "gcps_es_individual",
+      "description": "KT Equine Scheme Individual",
+      "applicationId": 930
+    }, {
+      "id": 93222,
+      "name": "gcps_ss_individual",
+      "description": "KT Sheep Scheme Individual",
+      "applicationId": 930
+    }, {
+      "id": 93322,
+      "name": "gcps_ofs_individual",
+      "description": "OFS Individual",
+      "applicationId": 930
+    }, {
+      "id": 93102,
+      "name": "gcps_awnss_individual",
+      "description": "TAMS II AWNSS Individual",
+      "applicationId": 930
+    }, {
+      "id": 93082,
+      "name": "gcps_less_individual",
+      "description": "TAMS II LESS Individual",
+      "applicationId": 930
+    }, {
+      "id": 10099,
+      "name": "aim_farmer",
+      "description": "AIM Farmer",
+      "applicationId": 100
+    }, {
+      "id": 1860001,
+      "name": "lpisinet_bpsinet_user",
+      "description": "LPISINET - BPSINET User",
+      "applicationId": 1860
+    }, {
+      "id": 52004,
+      "name": "iforisinet_forest_owner",
+      "description": "IFORISINET Forest Owner",
+      "applicationId": 520
+    }, {
+      "id": 1930001,
+      "name": "ecs_inet_user",
+      "description": "ECS INET User",
+      "applicationId": 1930
+    }, {
+      "id": 91005,
+      "name": "bdp_farmer",
+      "description": "BDP Farmer",
+      "applicationId": 910
+    }, {
+      "id": 47099,
+      "name": "nitrates_farmer",
+      "description": "NITRATES Farmer",
+      "applicationId": 470
+    }, {
+      "id": 41004,
+      "name": "nrateder_farmer",
+      "description": "NRATEDER Farmer",
+      "applicationId": 410
+    }, {
+      "id": 89005,
+      "name": "suds_farmer",
+      "description": "SUDS Farmer",
+      "applicationId": 890
+    }, {
+      "id": 105002,
+      "name": "bps_agfood_farmer",
+      "description": "BPS (INET) Farmer",
+      "applicationId": 1050
+    }, {
+      "id": 150006,
+      "name": "sws_inet_farmer",
+      "description": "Sheep Welfare Scheme Farmer",
+      "applicationId": 1500
+    }, {
+      "id": 86001,
+      "name": "sapbd_user",
+      "description": "Financial Self-Services User",
+      "applicationId": 860
+    }, {
+      "id": 83004,
+      "name": "aers_farmer",
+      "description": "AERS Farmer",
+      "applicationId": 830
+    }]
+  },
+  "notes": null,
+  "ccsAssociation": {
+    "businessId": "OLS114543D",
+    "businessRole": "OLS",
+    "customerType": "I",
+    "customerId": 1763314
+  },
+  "firstTimeSetupRequired": false,
+  "associationValidationRequired": false
+},
+{
+  "accountType": "INDIVIDUAL",
+  "id": 22127,
+  "username": "466661AP",
+  "forename": "JOEY",
+  "surname": "O'REILLY",
+  "description": "Offline Services User",
+  "email": null,
+  "ppsn": "466661AP",
+  "personnel": null,
+  "grade": null,
+  "homeWorkarea": {
+    "id": 1,
+    "name": "holding",
+    "type": null,
+    "description": "[] Holding Work Area",
+    "customerId": 0,
+    "adminCode": 0
+  },
+
+  "authentication": {
+    "startDate": null,
+    "stopDate": null,
+    "passwordChangeInterval": 0,
+    "failedLoginAttempts": 0,
+    "lastSuccessfulLogin": "2019-09-07T06:00:03",
+    "dateOfTermsConditionsAcceptance": "2018-09-12T15:56:58",
+    "accountLocked": false,
+    "accountLockedDueToFailedLogons": false,
+    "accountOutsideValidityPeriod": false,
+    "disabled": false,
+    "passwordChangeRequested": false
+  },
+  "authorisations": {
+    "roles": [{
+      "id": 96020,
+      "name": "ismart_view_thematics",
+      "description": "GIS ismart view thematics",
+      "applicationId": 960
+    }, {
+      "id": 96012,
+      "name": "gis_inet_group",
+      "description": "GIS INET Group",
+      "applicationId": 960
+    }, {
+      "id": 83004,
+      "name": "aers_farmer",
+      "description": "AERS Farmer",
+      "applicationId": 830
+    }]
+  },
+  "notes": null,
+  "ccsAssociation": {
+    "businessId": "OLS114543D",
+    "businessRole": "OLS",
+    "customerType": "I",
+    "customerId": 1763314
+  },
+  "firstTimeSetupRequired": false,
+  "associationValidationRequired": false
+}
+
+]

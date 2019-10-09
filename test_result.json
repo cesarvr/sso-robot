@@ -1,0 +1,16 @@
+{
+    "jti": "5e4f44d0-48ae-4f6d-bc29-7545ab146db7",
+    "exp": 1570629640,
+    "nbf": 0,
+    "iat": 1570629580,
+    "iss": "https://sso-sso-uat.apps.rhos.agriculture.gov.ie/auth/realms/master",
+    "sub": "9c2ddff7-04b0-405e-81fc-c987d6712bc8",
+    "typ": "Bearer",
+    "azp": "admin-cli",
+    "auth_time": 0,
+    "session_state": "c18c1cfb-80c3-462b-b2da-f1189fefd707",
+    "acr": "1",
+    "scope": "profile email phone",
+    "email_verified": false,
+    "preferred_username": "admin"
+}
