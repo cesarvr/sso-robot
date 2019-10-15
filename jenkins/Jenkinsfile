@@ -53,17 +53,17 @@ def testPluginIntegration(PROJECT, podName) {
     sh "oc exec -n ${PROJECT} ${podName} -- node sso.js -clear"
 
     echo 'Authenticating against Red Hat SSO'
-    sh "oc exec -n ${PROJECT} ${podName} -- node sso.js -url ${TARGET_URL} patrick demorealm"
+    sh "oc exec -n ${PROJECT} ${podName} -- node sso.js -url ${TARGET_URL} JAMES.WHITE @d3vpw4812!! demorealm"
     sh "oc cp -n ${PROJECT} ${podName}:logs/test_result.json result.json"
 
     script {
         def result = readJSON file: 'result.json'
 
-        assert result['name'] == 'PATRICK TORMEY'
-        assert result['ccsid'] == '1763314'
-        assert result['preferred_username'] == '4638814N'
-        assert result['given_name'] == 'PATRICK'
-        assert result['family_name'] == 'TORMEY'
+        assert result['name'] == 'WILLIAM GEOGHEGAN'
+        assert result['ccsid'] == '378476'
+        assert result['preferred_username'] == 'JAMES.WHITE'
+        assert result['given_name'] == 'WILLIAM'
+        assert result['family_name'] == 'GEOGHEGAN'
     }
 }
 
@@ -73,17 +73,17 @@ def testingCorrectRoleAssignment(PROJECT, podName) {
     sh "oc exec -n ${PROJECT} ${podName} -- node sso.js -clear"
 
     echo 'Authenticating against Red Hat SSO'
-    sh "oc exec -n ${PROJECT} ${podName} -- node sso.js -url ${TARGET_URL} white demorealm"
+    sh "oc exec -n ${PROJECT} ${podName} -- node sso.js -url ${TARGET_URL} TESTUSER1B @d3vpw4812!! demorealm"
     sh "oc cp -n ${PROJECT} ${podName}:logs/test_result.json correct_role_assignment.json"
 
     script {
         def result = readJSON file: 'correct_role_assignment.json'
 
-        assert result['name'] == 'PATRICK & MOIRA MANNION'
-        assert result['preferred_username'] == 'JAMES.WHITE'
-        assert result['given_name'] == 'PATRICK & MOIRA'
-        assert result['family_name'] == 'MANNION'
-        role = result['realm_access']['roles'].find { it == "aim_farmer" }
-        assert role == "aim_farmer"
+        assert result['name'] == 'JOHN ENRIGHT'
+        assert result['preferred_username'] == 'TESTUSER1B'
+        assert result['given_name'] == 'JOHN'
+        assert result['family_name'] == 'ENRIGHT'
+       // role = result['realm_access']['roles'].find { it == "aim_farmer" }
+       // assert role == "aim_farmer"
     }
 }
