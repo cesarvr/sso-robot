@@ -80,7 +80,7 @@ Remote command execution:
 
 ## Adding Changes Bot
 
-Once you tested your changes you need to deploy like this: 
+Once you tested your changes you need to deploy it like this: 
 
 ```sh
 sh ./build/build.sh
