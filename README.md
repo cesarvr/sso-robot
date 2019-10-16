@@ -1,8 +1,8 @@
 # SSO Agent
-This is a multipurpose robot to perform various task at the moment it supports: 
+This is a multi-purpose robot to perform various task at the moment it supports. 
 
 
-## Commands
+### Commands
 
 **Users lookup** Logins a particular user using the OpenId protocol. 
 
