@@ -15,11 +15,11 @@ const KeycloakConfigurator = require('./lib/configure')
 new CMD({
   clean: () => new Clean().doIt(),
   clear: () => new Clean().doIt(),
-  url: (url, name, realm) => {
-    console.log(' == calling:', url, 'name:', name)
-    OAuth2(url, name, realm)
+  url: (url, name, password, realm) => {
+    console.log(' == calling:', url, 'name:', name, 'password:', password)
+    OAuth2(url, name, password, realm)
   },
-  config: (url, username, password, realm) => {
+  roles: (url, username, password, realm) => {
       KeycloakConfigurator.run(url, username, password, realm)
   }
 }).run()
