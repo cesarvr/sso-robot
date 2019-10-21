@@ -1,5 +1,5 @@
 # SSO Agent
-This is a multi-purpose robot to perform various task at the moment it supports the following commands:
+This is a multi-purpose robot to perform various task, it comes handy to automate some task against Red Hat Single Sign-On:
 
 **Users lookup** Logins a particular user using the OpenId protocol.
 
@@ -51,3 +51,55 @@ You defined the command as follow, you need to go to the ```sso.js``` and look f
       <command>: (arg1, arg2, arg3) => YourOwnModule(...arg).DoSomething()
  }).run()
 ```
+<<<<<<< HEAD
+=======
+
+
+
+## Deploying The Bot
+
+This project includes an script to create the BuildConfiguration and the Deployment:
+
+```sh
+   sh ./build/create.sh    
+```
+
+Next you can locate the pod using ``oc get pod`` and locate a pod that start with ``sso-bot-*``: 
+
+```sh
+    oc get pod 
+
+    # NAME               READY     STATUS       RESTARTS   AGE
+    # sso-bot-1-hgg2l    1/1       Running      0          9m
+```
+
+Remote command execution: 
+
+```sh
+    oc exec sso-bot-1-hgg2l -- node sso.js -url https://sso-uat user xxyy my_realm
+
+    #...
+    #...
+```
+
+
+## Adding Changes Bot
+
+Once you tested your changes you need to deploy it like this: 
+
+```sh
+sh ./build/build.sh
+```
+
+This scripts deploy a new version and automatically deploy the new image into a new pod, now you just need to again locate the pod: 
+
+```sh
+    oc exec sso-bot-1-hgg2l -- node sso.js -my_new_command arg1 arg2
+
+    #...
+    #...
+```
+
+
+
+>>>>>>> 1aa67cad4057009c2e102dbebd741c6ee1daa288
