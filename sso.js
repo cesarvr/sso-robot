@@ -21,5 +21,8 @@ new CMD({
   },
   roles: (url, username, password, realm) => {
       KeycloakConfigurator.run(url, username, password, realm)
+  },
+  config: (url, username, password, realm) => {
+      KeycloakConfigurator.run(url, username, password, realm)
   }
 }).run()
