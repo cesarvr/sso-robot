@@ -51,8 +51,6 @@ You defined the command as follow, you need to go to the ```sso.js``` and look f
       <command>: (arg1, arg2, arg3) => YourOwnModule(...arg).DoSomething()
  }).run()
 ```
-<<<<<<< HEAD
-=======
 
 
 
@@ -101,5 +99,3 @@ This scripts deploy a new version and automatically deploy the new image into a 
 ```
 
 
-
->>>>>>> 1aa67cad4057009c2e102dbebd741c6ee1daa288
