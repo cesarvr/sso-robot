@@ -106,8 +106,9 @@ new CMD({
       KeycloakConfigurator.run(url, username, password, realm)
   },
 
-  'new-sso' : (name, project) => {
-    CreateOKDProject(name, project)
+  install: (name, project, token) => {
+    console.log('installing that -> ', name, project, token)
+    CreateOKDProject(name, project, token)
   }
 
 }).run()
