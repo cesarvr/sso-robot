@@ -1,0 +1,7 @@
+{
+	"clientId": "amaranto",
+	"consentRequired": false,
+    "standardFlowEnabled": true,
+    "implicitFlowEnabled": true,
+    "directAccessGrantsEnabled": true
+}

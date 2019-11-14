@@ -4,6 +4,9 @@ const OAuth2 = require('./lib/oauth2')
 const KeycloakConfigurator = require('./lib/configure')
 const ssecure_service = require('./lib/secure_service_tester')
 const SPI = require('./lib/spi')
+const CreateOKDProject = require('./lib/ocp/create')
+const _ = require('lodash')
+
 /*
   Usage: node sso.js -param args
 
@@ -38,44 +41,73 @@ new CMD({
     ssecure_service(url, name, svc)
   },
 
-  'client': async function(url, username, password, realm) {
-    let spi = await SPI(url, username, password, realm)
-    let client = await spi.client.get()
-    console.log('clients => ', client)
-  },
-
-  'add-client': async function(url, username, password, realm) {
-    let spi = await SPI(url, username, password, realm)
-    let client = {
-      clientId: 'amaranto',
-      consentRequired: false,
-      standardFlowEnabled: true,
-      implicitFlowEnabled: true,
-      directAccessGrantsEnabled: true
+ 'get': async function(resource, url, realm) {
+    let user     = process.env['RHSSO_ADMIN_USER'] || 'admin'
+    let password = process.env['RHSSO_ADMIN_PASSWORD'] || 'admin'
+    
+    if(_.isEmpty(url)){
+      console.log(`Need an URL!!`)
+      process.exit(-1)
     }
 
-    let ret = await spi.client.post(client)
-    console.log('add-client => ', ret)
+    if(_.isEmpty(resource)){
+      console.log(`Need an resource example: node sso.js -get url realms`)
+      process.exit(-1)
+    }
+  
+    let spi = await SPI(url, user, password, realm)
+    let spiResource = spi[resource]
+
+    if(_.isEmpty(spiResource)){
+      console.log(`Resource (${spiResource}) doesn't exist or not implemented`)
+      process.exit(-1)
+    }
+
+    let federated = await spiResource.get()
+    console.log(federated)
   },
+
+
+ 'post': async function(resource, url, file, realm) {
+    let user     = process.env['RHSSO_ADMIN_USER'] || 'admin'
+    let password = process.env['RHSSO_ADMIN_PASSWORD'] || 'admin'
+    
+    if(_.isEmpty(url)){
+      console.log(`Need an URL!!`)
+      process.exit(-1)
+    }
+
+    if(_.isEmpty(resource)){
+      console.log(`Need an resource example: node sso.js -get url realms`)
+      process.exit(-1)
+    }
+
+    let payload = JSON.parse( require('fs').readFileSync(file).toString() ) 
+    console.log('payload=>', payload)
+    
+    let spi = await SPI(url, user, password, realm)
+    let spiResource = spi[resource]
+
+    if(_.isEmpty(spiResource)){
+      console.log(`Resource (${spiResource}) doesn't exist or not implemented`)
+      process.exit(-1)
+    }
+
+    let federated = await spiResource.post(payload)
+    console.log(federated)
+  },
+
    
-  'providers': async function(url, username, password, realm) {
-    let spi = await SPI(url, username, password, realm)
-    let federated = await spi.providers.get()
-    console.log('providers =>', federated)
-  },
-
-  'federated': async function(url, username, password, realm) {
-    let spi = await SPI(url, username, password, realm)
-    let federated = await spi.federation.get()
-    console.log('federated =>', federated)
-  },
-
   roles: (url, username, password, realm) => {
       KeycloakConfigurator.run(url, username, password, realm)
   },
 
   config: (url, username, password, realm) => {
       KeycloakConfigurator.run(url, username, password, realm)
+  },
+
+  'new-sso' : (name, project) => {
+    CreateOKDProject(name, project)
   }
 
 }).run()
