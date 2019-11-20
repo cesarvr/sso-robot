@@ -1,0 +1,15 @@
+{
+	"name": "Legacy Single Sign-On Integrator",
+	"providerId": "Legacy Single Sign-On Integrator",
+	"providerType": "org.keycloak.storage.UserStorageProvider",
+	"config": {
+		"priority": ["0"],
+		"enabled": ["true"],
+		"cachePolicy": ["NO_CACHE"],
+		"evictionDay": [],
+		"evictionHour": [],
+		"evictionMinute": [],
+		"maxLifespan": [],
+		"datasource_name": ["https://legacy-service-uat-auth-api-dev.apps.rhos.agriculture.gov.ie"]
+	}
+}

@@ -1,0 +1,41 @@
+{
+    "apiVersion": "build.openshift.io/v1",
+    "kind": "BuildConfig",
+    "metadata": {
+        "annotations": {
+            "openshift.io/generated-by": "sso-image",
+            "application": "sso-image"
+        },
+        "labels": {
+            "build": "sso-build",
+            "application": "sso-image"
+        },
+        "name": ""
+    },
+    "spec": {
+        "output": {
+            "to": {
+                "kind": "ImageStreamTag",
+                "name": ""
+            }
+        },
+        "source": {
+            "binary": {},
+            "type": "Binary"
+        },
+        "strategy": {
+            "dockerStrategy": {
+                "from": {
+                    "kind": "ImageStreamTag",
+                    "name": "redhat-sso73-openshift:latest",
+                    "namespace": "openshift"
+                }
+            },
+            "type": "Docker"
+        },
+        "triggers": []
+    },
+    "status": {
+        "lastVersion": 0
+    }
+}

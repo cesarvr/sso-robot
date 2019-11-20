@@ -1,6 +1,7 @@
 {
-	"id":"deleteme-realm",
-	"realm":"deleteme-realm",
-	"displayName": "Just delete this realm",
-	"displayNameHtml": "Just delete this realm"
+	"id":"demorealm",
+	"realm":"demorealm",
+	"displayName": "Demorealm",
+	"displayNameHtml": "Demorealm",
+	"enable": true
 }
