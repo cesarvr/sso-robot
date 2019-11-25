@@ -5,12 +5,13 @@ const ssecure_service = require('./lib/secure_service_tester')
 const SPI = require('./lib/spi')
 const _ = require('lodash')
 
-
+const Token = require('./lib/ocp/token')
 const CreateOKDProject = require('./lib/ocp/create')
 const OKDResourceTemplate = require('./lib/ocp/template')
 const ImageBuilder = require('./lib/ocp/image-builder')
-
-
+const UpdateSSO = require('./lib/ocp/update')
+const OKDTest  = require('./lib/ocp/find')
+const OKDRoute = require('./lib/ocp/routes')
 
 let user     = process.env['RHSSO_ADMIN_USER'] || 'admin'
 let password = process.env['RHSSO_ADMIN_PASSWORD'] || 'admin'
@@ -39,6 +40,8 @@ async function KCResourceFactory(resource, url, realm, id){
 
   return spiResource
 }
+
+
 
 /*
   Usage: node sso.js -param args
@@ -99,12 +102,23 @@ new CMD({
     let simpleSSO  = new OKDResourceTemplate('./lib/ocp/templates/sso.json')
     let okdCreator = new CreateOKDProject(simpleSSO)
 
-    okdCreator.create(name, project, token)
+    okdCreator.create(name, project,  Token(token))
   },
 
   builder: (name, project, token) => {
+    ImageBuilder(name, project,  Token(token))
+  },
 
-    ImageBuilder(name, project, token)
+  test: (project, token) => {
+    OKDTest(project, Token(token))
+  },
+  
+  route: (name, project, token) => {
+    OKDRoute(name, project, Token(token))
+  },
+
+  useThisImage: (name, image, project, token) => {
+    UpdateSSO(name, image, project, token)
   },
 
   "install-with-pg": (name, project, token) => {
@@ -112,7 +126,7 @@ new CMD({
     let postgressSSO = new OKDResourceTemplate('./lib/ocp/templates/sso-postgress.json')
     let okdCreator   = new CreateOKDProject(postgressSSO)
 
-    okdCreator.create(name, project, token)
+    okdCreator.create(name, project,  Token(token))
   }
 
 }).run()
