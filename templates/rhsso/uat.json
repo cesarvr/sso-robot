@@ -1,0 +1,7 @@
+{
+	"id":"uat-2",
+	"realm":"UAT",
+	"displayName": "UAT DB",
+	"displayNameHtml": "UAT DB",
+	"enabled": true
+}
