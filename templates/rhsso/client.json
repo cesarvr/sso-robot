@@ -3,7 +3,6 @@
   "surrogateAuthRequired": false,
   "enabled": true,
   "clientAuthenticatorType": "client-secret",
-  "secret": "**********",
   "redirectUris": [
     "*"
   ],

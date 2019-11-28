@@ -27,7 +27,7 @@
             "dockerStrategy": {
                 "from": {
                     "kind": "ImageStreamTag",
-                    "name": "redhat-sso73-openshift:latest",
+                    "name": "redhat-sso73-openshift:1.0",
                     "namespace": "openshift"
                 }
             },

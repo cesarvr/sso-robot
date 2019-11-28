@@ -1,50 +1,108 @@
 # SSO Agent
 This is a multi-purpose robot to perform various task, it comes handy to automate some task against Red Hat Single Sign-On:
 
-**Users lookup** Logins a particular user using the OpenId protocol.
+### Get
+
+You can get different Keycloak resources by doing: 
 
 ```sh
-    node sso.js -url <RH-SSO-URL> <user> <password> <realm>
-
-    node sso.js -url https://secure-sso-sso-dev.apps.rhos.agriculture.gov.ie/ JOHN.WHITE @d3vpw4812!!
+node sso.js -get <resource> <url> <realm-if-needed>
 ```
 
-   > It will decrypt the token and put it in a file inside the ``logs/test_result.json`` folder, then we can use this file to validate the user.
-
-
-
-<br>    
-
-**Roles population** This actions allows you to create roles in a particular realm or all realms, this can be use to automate deployments of RHSSO in other namespaces.
+Example:
 
 ```sh
-    node sso.js -config <RH-SSO-URL> <admin-user> <admin-password> <realm>
+node sso.js -get client https://my-keycloak-server my-client
 
-    node sso.js -config https://secure-sso-sso-dev.apps.rhos.agriculture.gov.ie/ admin 123456 my_realm
-
-    ## or
-    node sso.js -roles https://secure-sso-sso-dev.apps.rhos.agriculture.gov.ie/ admin 123456 my_realm
+{
+  clientId: 'my-client-1',
+  rootUrl: '',
+  adminUrl: '',
+  surrogateAuthRequired: false,
+  enabled: true,
+}
 ```
-<br>  
+
+### Searching
+
+Some cases if you don't remember the name of a particular service you can do a search: 
+
+```sh
+node sso.js -find <resource> <url> --key=value
+```
+
+Example: 
+
+```sh
+node sso.js -find client https://my-keycloak-server --clientId=my-client
+
+{
+  clientId: 'my-client-1',
+  rootUrl: '',
+  adminUrl: '',
+  surrogateAuthRequired: false,
+  enabled: true,
+}
+```
+### Filtering
+
+If you want to pull resources that follow a pattern you can: 
+
+```sh
+node sso.js -filter <resource> <url> --key=value
+```
+
+Example: 
+
+```sh
+node sso.js -filter client https://my-keycloak-server --clientId=my-client
+
+[
+    {
+      clientId: 'my-client-1',
+      rootUrl: '',
+      adminUrl: '',
+      surrogateAuthRequired: false,
+      enabled: true,
+    },
+    {
+      clientId: 'my-client-2',
+      rootUrl: '',
+      adminUrl: '',
+      surrogateAuthRequired: false,
+      enabled: true,
+    }
+]
+
+```
+
+
+### Migrating Components 
+
+The majority of calls defined above returns a plain ``JSON object``, this is very useful to orchestrate synchronization between different RHSSO environments. 
+
+```sh 
+# Import
+node sso.js -find storage https://my-keycloak-dev demorealm --name="my-user-federation-spi" > my-spi.json
+
+# Now we can export it to another environment
+node sso.js -post storage https://my-keycloak-uat my-spi.json demorealm
+```
 
 ### Miscellaneous
 
 **Clear/Clean** Remove the test files from ``logs/*``
 
 
-<br>  
+## Customization
 
-## Adding More Commands
-
-The robot works this way it takes:
+The command line tool works like this, it takes:
 
 ```sh
     node sso.js -<command> arg1 arg2 arg3
 ```
 
-
-You defined the command as follow, you need to go to the ```sso.js``` and look for add your function to the constructor:
-
+And the class ```CMD``` basically inject the get the command order ``-command`` and call the function mapped to that field: 
 
 ```js
  new CMD({
@@ -53,6 +111,20 @@ You defined the command as follow, you need to go to the ```sso.js``` and look f
 ```
 
 
+### New Parameters 
+
+Also there is the possibility to add parameters like this ones: 
+
+```sh
+node sso.js -get resource --name=my_resource --realm=my_realm
+
+```
+
+This makes things easier to remember, you can collect then the values with this: 
+
+```js
+ let argss = read_params( process.argv ) // {name: 'my_resource', realm='my_realm'}
+```
 
 ## Deploying The Bot
 
