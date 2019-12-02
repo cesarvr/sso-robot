@@ -34,8 +34,12 @@ new CMD({
 
   clear: () => new Clean().doIt(),
 
-  url: (url, name, password, realm) => {
-     OAuth2.loginWithCredentials(url, name, password, realm)
+  openid: {
+    required: ['realm', 'url', 'username', 'password', 'client'],
+    executor: async function(options) {
+     let token = await OAuth2.loginWithCredentials(options.params)
+     console.log(token)
+    }
   },
 
   user: (url, name) => {
@@ -47,12 +51,8 @@ new CMD({
     OAuth2.loginAsDevUser(url, name)
   },
 
-  get_roles: (url, name, svc) => {
-    ssecure_service(url, name, svc)
-  },
-
   get: {
-    required: ['project', 'realm', 'url'],
+    required: ['realm', 'url'],
     executor: async function(options) {
       let opts = _.merge({resource: options.resource }, options.params)
       let keycloakREST = await KeycloakFactory( opts )
@@ -62,20 +62,19 @@ new CMD({
   },
 
   find: {
-    required: ['project', 'realm', 'url', 'query'],
+    required: ['realm', 'url', 'query'],
     executor: async function(options) {
       let opts = _.merge({resource: options.resource}, options.params)
       let keycloakREST = await KeycloakFactory( opts )
 
       let query = get_query_helper(options)
-      console.log('query=> ', query)
       let findings = await keycloakREST.find( query )
       console.log(findings)
     }
   },
 
   filter: {
-    required: ['project', 'realm', 'url', 'query'],
+    required: ['realm', 'url', 'query'],
     executor: async function(options) {
       let opts = _.merge({resource: options.resource}, options.params)
       let keycloakREST = await KeycloakFactory( opts )
@@ -87,15 +86,17 @@ new CMD({
     }
   },
 
-  post: async function(resource, url, file, realm, id) {
-    let argss = read_params(process.argv)
-
-    let keycloakREST = await KeycloakFactory({resource, url, realm: argss.realm || realm, id})
-    let payload = JSON.parse( require('fs').readFileSync(argss['from-file'] || file).toString() ) 
-    
-    // We remove the id's otherwise Keycloak won't allow to install objects in multiple realms.
-    let federated = await keycloakREST.post(remove_ids(payload))
-    console.log(federated)
+  post: {
+    required: ['realm', 'url', 'from-file'],
+    executor: async function(options) {
+      let opts = _.merge({resource: options.resource}, options.params)
+      let keycloakREST = await KeycloakFactory( opts )
+      let fileName = options.params['from-file']
+      
+      let payload = JSON.parse( require('fs').readFileSync(fileName).toString() ) 
+      let federated = await keycloakREST.post(remove_ids(payload))
+      console.log(federated)  
+    }
   },
    
   install: (name, project, token) => {
