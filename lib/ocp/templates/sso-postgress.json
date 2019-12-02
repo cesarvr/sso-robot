@@ -25,29 +25,17 @@
 
     "objects": [        
 
-
-
         {
             "apiVersion": "v1",
             "kind": "PersistentVolumeClaim",
             "metadata": {
-                "annotations": {
-                    "pv.kubernetes.io/bind-completed": "yes",
-                    "pv.kubernetes.io/bound-by-controller": "yes",
-                    "volume.beta.kubernetes.io/storage-provisioner": "kubernetes.io/glusterfs"
-                },
-                "finalizers": [
-                    "kubernetes.io/pvc-protection"
-                ],
                 "labels": {
                     "application": "${APPLICATION_NAME}"
                 },
-                "namespace": "deleteme-a",
                 "name": "${APPLICATION_NAME}-postgresql-claim"
             },
             "spec": {
                 "storageClassName": "glusterfs-storage",
-                "volumeName": "pvc-f3180d44-06e8-11ea-bdff-005056ba7818",
                 "accessModes": [
                     "ReadWriteOnce"
                 ],

@@ -1,7 +1,7 @@
 const CMD = require('./lib/cmd')
 const Clean = require('./lib/clean')
 const OAuth2 = require('./lib/oauth2')
-const { read_params, remove_ids } = require('./lib/tools')
+const { read_params, remove_ids, parseEqualitySyntax } = require('./lib/tools')
 const ssecure_service = require('./lib/secure_service_tester')
 const {KeycloakFactory} = require('./lib/keycloak')
 const _ = require('lodash')
@@ -27,6 +27,8 @@ let password = process.env['RHSSO_ADMIN_PASSWORD'] || 'admin'
   }
 */
 
+const get_query_helper = (options) => parseEqualitySyntax(options.params.query.split('&'))
+
 new CMD({
   clean: () => new Clean().doIt(),
 
@@ -49,25 +51,40 @@ new CMD({
     ssecure_service(url, name, svc)
   },
 
-  get: async function(resource, url, realm, id) {
-    let keycloakREST = await KeycloakFactory({resource, url, realm, id})
-
-    let federated = await keycloakREST.get()
-    console.log(federated)
+  get: {
+    required: ['project', 'realm', 'url'],
+    executor: async function(options) {
+      let opts = _.merge({resource: options.resource }, options.params)
+      let keycloakREST = await KeycloakFactory( opts )
+      let federated    = await keycloakREST.get()
+      console.log(federated)
+    }
   },
 
-  find: async function(resource, url, realm, name) {
-    let keycloakREST = await KeycloakFactory({resource, url, realm})
+  find: {
+    required: ['project', 'realm', 'url', 'query'],
+    executor: async function(options) {
+      let opts = _.merge({resource: options.resource}, options.params)
+      let keycloakREST = await KeycloakFactory( opts )
 
-    let findings = await keycloakREST.find(read_params(process.argv))
-    console.log(findings)
+      let query = get_query_helper(options)
+      console.log('query=> ', query)
+      let findings = await keycloakREST.find( query )
+      console.log(findings)
+    }
   },
 
-  filter: async function(resource, url, realm, name) {
-    let keycloakREST = await KeycloakFactory({resource, url, realm})
+  filter: {
+    required: ['project', 'realm', 'url', 'query'],
+    executor: async function(options) {
+      let opts = _.merge({resource: options.resource}, options.params)
+      let keycloakREST = await KeycloakFactory( opts )
 
-    let findings = await keycloakREST.filter(read_params(process.argv))
-    console.log(findings)
+      let query = get_query_helper(options)
+      console.log('query=> ', query)
+      let findings = await keycloakREST.filter( query )
+      console.log(findings)
+    }
   },
 
   post: async function(resource, url, file, realm, id) {
@@ -89,23 +106,28 @@ new CMD({
     okdCreator.create(name, project,  Token(token))
   },
 
-  builder: (name, project, token) => {
-    ImageBuilder(name, project,  Token(token))
+  builder: {
+    required: ['name', 'token', 'project'],
+    executor: options => ImageBuilder(options.params) 
   },
 
-  test: (project, token) => {
-    OKDTest(project, Token(token))
+  test: {
+    required: ['token', 'project'],
+    executor: options => {  console.log('opts => ', options);  OKDTest(options.params) }
   },
-  
-  route: (name, project, token) => {
-    OKDRoute(name, project, Token(token))
+
+  route: {
+    required: ['token', 'project'],
+    executor: (options) => {
+      OKDRoute(name, options.project, options.token)  
+    }
   },
 
   useThisImage: (name, image, project, token) => {
     UpdateSSO(name, image, project, Token(token))
   },
 
-  "install-with-pg": (name, project, token) => {
+  "install-p": (name, project, token) => {
     console.log('installing with-pg that -> ', name, project, token)
     let postgressSSO = new OKDResourceTemplate('./lib/ocp/templates/sso-postgress.json')
     let okdCreator   = new CreateOKDProject(postgressSSO)
