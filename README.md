@@ -1,26 +1,28 @@
 # SSO Agent
-This is a multi-purpose robot to perform various task, it comes handy to automate some task against Red Hat Single Sign-On:
+
+This is Node.js extendable command line to automate Red Hat Single Sign-On (RHSSO) deployment configuration, image streams, build configuration, realms creation, clients, authentication (handy to test custom [Keycloak Providers](https://www.keycloak.org/docs/6.0/server_development/#_providers)), etc. 
+
+
+
+## Keycloak Actions 
+
+You can pull/post/find/filter the following resources from Keycloak/RHSSO:
+
+- Clients & Clients Secrets
+- Federation Plugins
+- Realms
 
 ### Get
 
-You can get different Keycloak resources by doing: 
-
 ```sh
-node sso.js -get <resource> <url> <realm-if-needed>
-```
-
-Example:
-
-```sh
-node sso.js -get client https://my-keycloak-server my-client
-
-{
+node sso.js get client --project=sso-dev --url=<https://my-keycloak-instance> --realm=my-realm
+[{
   clientId: 'my-client-1',
   rootUrl: '',
   adminUrl: '',
   surrogateAuthRequired: false,
   enabled: true,
-}
+}]
 ```
 
 ### Searching
@@ -28,13 +30,7 @@ node sso.js -get client https://my-keycloak-server my-client
 Some cases if you don't remember the name of a particular service you can do a search: 
 
 ```sh
-node sso.js -find <resource> <url> --key=value
-```
-
-Example: 
-
-```sh
-node sso.js -find client https://my-keycloak-server --clientId=my-client
+node sso.js find client --project=sso-dev --url=https://ss073-sso-dev.apps.rhos.agriculture.gov.ie --realm=demorealm --query=clientId=webapp1&enabled=true &&
 
 {
   clientId: 'my-client-1',
@@ -89,9 +85,10 @@ node sso.js -find storage https://my-keycloak-dev demorealm --name="my-user-fede
 node sso.js -post storage https://my-keycloak-uat my-spi.json demorealm
 ```
 
-### Miscellaneous
+## OpenShift
 
-**Clear/Clean** Remove the test files from ``logs/*``
+Part of its functionality is to also automate the deployment of RHSSO/Keycloak instances in OpenShift, it work best when deployed into a Pod because you can create a [service account](https://docs.openshift.com/container-platform/3.6/dev_guide/service_accounts.html) to have a better control of what namespace you can deploy RHSSO. 
+
 
 
 ## Customization
@@ -151,7 +148,6 @@ Remote command execution:
     #...
     #...
 ```
-
 
 ## Adding Changes Bot
 

@@ -1,8 +1,8 @@
-apiVersion: rbac.authorization.k8s.io/v1
+apiVersion: authorization.openshift.io/v1
 kind: ClusterRole
 metadata:
-  name: sso-god
-  namespace: sso-dev
+  name: <%=name%>
+  namespace: <%=namespace%>
 rules:
 - apiGroups: ["*"] # "" indicates the core API group
   resources: ["pods", "services", "deploymentconfigs", "routes", "imagestreams", "secrets", "buildconfigs", "persistentvolumeclaims"]

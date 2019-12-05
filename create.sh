@@ -1,3 +1,3 @@
-oc new-project cicd 
-oc new-build -n cicd --name=sso-robot --strategy=docker --binary=true 
-oc new-app -n cicd --image-stream=sso-robot --name=sso-robot
+oc new-build -n $1 --name=sso-bot --strategy=docker --binary=true 
+oc start-build -n $1 bc/sso-bot --from-file=. --follow
+oc new-app -n $1 --image-stream=sso-bot --name=sso-bot

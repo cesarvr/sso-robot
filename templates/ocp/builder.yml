@@ -1,0 +1,23 @@
+apiVersion: build.openshift.io/v1
+kind: BuildConfig
+metadata:
+  annotations:
+    openshift.io/generated-by: sso-bot
+    application: <%=name%>
+  labels:
+    build: <%=name%>
+    application: <%=name%>
+  name: <%=name%>
+spec:
+  output:
+    to:
+      kind: ImageStreamTag
+      name: <%=name%>:latest
+  postCommit: {}
+  resources: {}
+  source:
+    binary: {}
+    type: Binary
+  strategy:
+    dockerStrategy: {}
+    type: Docker

@@ -1,0 +1,38 @@
+apiVersion: apps.openshift.io/v1
+kind: DeploymentConfig
+metadata:
+  labels:
+    application: <%=name%>
+  annotations:
+    openshift.io/generated-by: sso-bot
+    application: <%=name%>
+  generation: 3
+  name: <%=name%>
+spec:
+  replicas: 1
+  selector:
+    application: <%=name%>
+  type: Rolling
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        application: <%=name%>
+    spec:
+      containers:
+      - image: busybox
+        name: <%=name%>
+      serviceAccount: <%=service_account_name%>
+      serviceAccountName: <%=service_account_name%>
+  test: false
+  triggers:
+  - type: ConfigChange
+  - imageChangeParams:
+      automatic: true
+      containerNames:
+      - <%=name%>
+      from:
+        kind: ImageStreamTag
+        name: <%=name%>:latest
+        namespace: <%=project%>
+    type: ImageChange

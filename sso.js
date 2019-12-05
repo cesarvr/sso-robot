@@ -1,7 +1,7 @@
 const CMD = require('./lib/cmd')
 const Clean = require('./lib/clean')
 const OAuth2 = require('./lib/oauth2')
-const { read_params, remove_ids, parseEqualitySyntax } = require('./lib/tools')
+const { read_params, remove_ids, parseEqualitySyntax, get_query_helper } = require('./lib/tools')
 const ssecure_service = require('./lib/secure_service_tester')
 const {KeycloakFactory} = require('./lib/keycloak')
 const _ = require('lodash')
@@ -10,7 +10,7 @@ const Token = require('./lib/ocp/token')
 const CreateOKDProject = require('./lib/ocp/create')
 const OKDResourceTemplate = require('./lib/ocp/template')
 const ImageBuilder = require('./lib/ocp/image-builder')
-const UpdateSSO = require('./lib/ocp/update')
+const { updateDeployment, createRobotCredentials, installOnOpenShfit, buildThisProject} = require('./lib/ocp/update')
 const OKDTest  = require('./lib/ocp/find')
 const OKDRoute = require('./lib/ocp/routes')
 
@@ -26,8 +26,6 @@ let password = process.env['RHSSO_ADMIN_PASSWORD'] || 'admin'
     params: (args)=>
   }
 */
-
-const get_query_helper = (options) => parseEqualitySyntax(options.params.query.split('&'))
 
 new CMD({
   clean: () => new Clean().doIt(),
@@ -99,17 +97,25 @@ new CMD({
     }
   },
    
-  install: (name, project, token) => {
-    console.log('installing that -> ', name, project, token)
-    let simpleSSO  = new OKDResourceTemplate('./lib/ocp/templates/sso.json')
-    let okdCreator = new CreateOKDProject(simpleSSO)
+  install: {
+    required: ['token', 'project', 'name', 'target'],
+    executor: options => {
+      
+      const actions = {
+        robot: () => installOnOpenShfit(options.params),
+        roles: () => createRobotCredentials(options.params),
+        build: () => buildThisProject(options.params)
+      }
 
-    okdCreator.create(name, project,  Token(token))
-  },
+      let exec = actions[options.resource]
 
-  builder: {
-    required: ['name', 'token', 'project'],
-    executor: options => ImageBuilder(options.params) 
+      if(!_.isUndefined(exec))
+        exec()
+      else 
+      {
+        console.log(`Command not found try: node sso.js -image [${Object.keys(actions).join(', ')}]`)
+      }
+    }
   },
 
   test: {
@@ -121,6 +127,53 @@ new CMD({
     required: ['token', 'project'],
     executor: (options) => {
       OKDRoute(name, options.project, options.token)  
+    }
+  },
+
+  deploy: {
+    required: ['name', 'token', 'project'],
+    executor: (options) => {
+
+      const actions = {
+        update: () => updateDeployment(options.params),
+        create: () => {
+          let simpleSSO  = new OKDResourceTemplate('./lib/ocp/templates/sso.json')
+          let okdCreator = new CreateOKDProject(simpleSSO)
+
+          okdCreator.create(options.params)
+        }
+      }
+
+      let exec = actions[options.resource]
+
+      if(!_.isUndefined(exec))
+        exec()
+      else 
+      {
+        console.log(`Command not found try: node sso.js -image [${Object.keys(actions).join(', ')}]`)
+      }
+    }
+  },
+
+  image: {
+    required: ['name', 'token', 'project'],
+    executor: (options) => {
+
+      const actions = {
+        update: () => UpdateSSO(options.params),
+        create: () => ImageBuilder(options.params)
+      }
+
+      let exec = actions[options.resource]
+
+      if(!_.isUndefined(exec))
+        exec()
+      else 
+      {
+        console.log(`Command not found try: node sso.js -image [${Object.keys(actions).join(', ')}]`)
+      }
+
+      //OKDRoute(name, options.project, options.token)  
     }
   },
 
