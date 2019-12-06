@@ -1,3 +1,5 @@
+# SSO-Robot
+
 Just a Openshift (operator like) writen in Node.js to automate Red Hat Single Sign-On deployments and orchestrate configuration/migration of resources.
 
 I wrote this to simplify the process of writing plugins in SSO, with this you *operator* you should be able to write your plugin locally and automate its deployment into a RHSSO instance running on OpenShift. 
