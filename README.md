@@ -1,5 +1,41 @@
-# SSO Agent
-This is a multi-purpose robot to perform various task, it comes handy to automate some task against Red Hat Single Sign-On:
+Just a Openshift (operator like) writen in Node.js to automate Red Hat Single Sign-On deployments and orchestrate configuration/migration of resources.
+
+I wrote this to simplify the process of writing plugins in SSO, with this you *operator* you should be able to write your plugin locally and automate its deployment into a RHSSO instance running on OpenShift. 
+
+You can orchestrate actions like: 
+
+- Deployment of Red Hat Single Sign-On (RHSSO). (Ephemeral or MySQL backed) 
+- SPI configuration like Federation/Storage plugins. 
+- OpenID authentication using (Direct Grant style), so you can test your plugin. 
+- Automate the creation of clients and realms. 
+- It does BuildConfig/ImageStream creation for custom RRHSSO image creation. 
+- And is easy to extend. 
+
+## Runtimes 
+
+This bot is designed to deploy itself into an Openshift namespace of your choice, but if you want to use it locally you also can, you just need to setup an envrionment variable in your commandline specifying the Openshift server REST API like this: 
+
+Windows: 
+
+```sh
+  set OKD_SERVER=https://my-openshift:443
+```
+
+Linux: 
+
+```sh
+  export OKD_SERVER=https://my-openshift:443
+```
+
+And now for example if you want to deploy RHSSO you can do: 
+
+```sh
+ node sso.js deploy create --name=ssso73 --token=my-token --project=hello &&
+```
+
+
+
+# RHSSO Resources
 
 ### Get
 
