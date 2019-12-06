@@ -15,7 +15,39 @@ You can orchestrate actions like:
 
 ## Runtimes 
 
-This bot is designed to deploy itself into an Openshift namespace of your choice, but if you want to use it locally you also can, you just need to setup an envrionment variable in your commandline specifying the Openshift server REST API like this: 
+First you need to install the dependencies with:
+
+```
+npm install 
+```
+
+### OpenShift
+
+This bot is designed to deploy itself into an Openshift, to install it in your cluster:
+
+```sh
+sh install.sh gdFfxkC7DEsBOfg... project project-target
+```
+
+- **token:** The first parameter is an Openshift token, you can get this token by doing: 
+
+```
+oc whoami -t 
+# gdFfxkC7DEsBOfg...
+``` 
+
+- **project:** Is the project where you want to deploy the bot, just make sure that the ``token`` has priviledge to perform the require actions in that namespace/project.
+- **project-target:** Basically configure the bot to have permissions in a particular namespace.
+
+#### Example 
+
+```sh
+  sh install.sh gdFfxkC7DEsBOfg... cicd sso-development
+```
+
+### Local
+
+To use it locally you just need to setup an envrionment variable in your commandline specifying the Openshift server REST API like this: 
 
 Windows: 
 
@@ -29,17 +61,17 @@ Linux:
   export OKD_SERVER=https://my-openshift:443
 ```
 
-And now for example if you want to deploy RHSSO you can do: 
+And provide the token: 
 
 ```sh
  node sso.js deploy create --name=ssso73 --token=my-token --project=hello
 ```
 
+> When running in a Pod is not necessary to pass the token parameter, the bot takes the container token. 
+
 # RHSSO Resources
 
 This is Node.js extendable command line to automate Red Hat Single Sign-On (RHSSO) deployment configuration, image streams, build configuration, realms creation, clients, authentication (handy to test custom [Keycloak Providers](https://www.keycloak.org/docs/6.0/server_development/#_providers)), etc. 
-
-
 
 ## Keycloak Actions 
 
@@ -50,6 +82,8 @@ You can pull/post/find/filter the following resources from Keycloak/RHSSO:
 - Realms
 
 ### Get
+
+To get a client for example: 
 
 ```sh
 node sso.js get client --project=sso-dev --url=<https://my-keycloak-instance> --realm=my-realm
@@ -67,7 +101,7 @@ node sso.js get client --project=sso-dev --url=<https://my-keycloak-instance> --
 Some cases if you don't remember the name of a particular service you can do a search: 
 
 ```sh
-node sso.js find client --project=sso-dev --url=https://ss073-sso-dev.apps.rhos.agriculture.gov.ie --realm=demorealm --query=clientId=webapp1&enabled=true &&
+node sso.js find client --project=sso-dev --url=https://my-rhsso-server --realm=demorealm --query=clientId=webapp1&enabled=true &&
 
 {
   clientId: 'my-client-1',
@@ -88,7 +122,7 @@ node sso.js -filter <resource> <url> --key=value
 Example: 
 
 ```sh
-node sso.js -filter client https://my-keycloak-server --clientId=my-client
+node sso.js -filter client https://my-rhsso-server --clientId=my-client
 
 [
     {
