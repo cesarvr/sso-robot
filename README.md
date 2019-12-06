@@ -37,6 +37,7 @@ oc whoami -t
 ``` 
 
 - **project:** Is the project where you want to deploy the bot, just make sure that the ``token`` has priviledge to perform the require actions in that namespace/project.
+
 - **project-target:** Basically configure the bot to have permissions in a particular namespace.
 
 #### Example 
@@ -44,6 +45,7 @@ oc whoami -t
 ```sh
   sh install.sh gdFfxkC7DEsBOfg... cicd sso-development
 ```
+> Now the bot can deploy RHSSO isntances in the sso-development namespace, if there is a RHSSO already there then its just ignore the command.  
 
 ### Local
 
