@@ -32,13 +32,10 @@ Linux:
 And now for example if you want to deploy RHSSO you can do: 
 
 ```sh
- node sso.js deploy create --name=ssso73 --token=my-token --project=hello &&
+ node sso.js deploy create --name=ssso73 --token=my-token --project=hello
 ```
 
-
-
 # RHSSO Resources
->>>>>>> a92d3c540268bfecb020fd1e6846379996b340da
 
 This is Node.js extendable command line to automate Red Hat Single Sign-On (RHSSO) deployment configuration, image streams, build configuration, realms creation, clients, authentication (handy to test custom [Keycloak Providers](https://www.keycloak.org/docs/6.0/server_development/#_providers)), etc. 
 
