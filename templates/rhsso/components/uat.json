@@ -3,9 +3,9 @@
 	"providerId": "Legacy Single Sign-On Integrator",
 	"providerType": "org.keycloak.storage.UserStorageProvider",
 	"config": {
-		"user_endpoint": ["http://user-uat-auth-api-dev.apps.rhos.agriculture.gov.ie/users"],
+		"user_endpoint": ["http://user-uat-auth-api-dev.apps.rhos.com/users"],
 		"cachePolicy": ["NO_CACHE"],
-		"datasource_name": ["https://legacy-service-uat-auth-api-dev.apps.rhos.agriculture.gov.ie"],
+		"datasource_name": ["https://legacy-service-uat-auth-api-dev.apps.rhos.com"],
 		"priority": ["0"],
 		"enabled": ["true"],
 		"evictionDay": [],

@@ -23,10 +23,10 @@ clear
 #node sso.js post client --url=https://my-sso --realm=demorealm --from-file=./templates/rhsso/client.json &&
 #
 #echo "=== Login To Dev DB via OpenId ===" &&
-#node sso.js openid --url=https://my-sso --realm=demorealm --client=webapp1 --username=JAMES.WHITE --password=@d3vpw4812!! &&
+#node sso.js openid --url=https://my-sso --realm=demorealm --client=webapp1 --username=JAMES --password=mmmmmDDDD &&
 #
 #echo "=== Login To Dev UAT via OpenId ===" &&
-#node sso.js openid --url=https://my-sso --realm=UAT --client=webapp1 --username=JAMES.WHITE --password=@u@tpw369!! &&
+#node sso.js openid --url=https://my-sso --realm=UAT --client=webapp1 --username=JAMES --password=nndddsaddsad &&
 #
 #echo "======= Testing Deployment [create] =======" &&
 #node sso.js deploy create --name=ssso73 --token=my-token --project=hello &&
@@ -45,5 +45,5 @@ echo "======= Testing Install [only build] =======" &&
 node sso.js install build --name=deployer-bot --token=my-token --project=hello --target=hello
 
 #echo "=== Testing Error messages ===" &&
-#node sso.js 
-#node sso.js test 
+#node sso.js
+#node sso.js test
