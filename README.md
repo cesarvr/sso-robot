@@ -4,7 +4,7 @@ Just a Openshift (operator like) written in Node.js to automate Red Hat Single S
 
 ![](https://github.com/cesarvr/sso-robot/blob/master/img/how-to-use.png?raw=true)
 
-I wrote this to simplify the process of writing plugins in SSO, with this you *operator* you should be able to write your plugin locally and automate its deployment into a RHSSO instance running on OpenShift.
+I wrote this to simplify the process of writing plugins in SSO, with this *operator* you should be able to write your plugin locally and automate its deployment into a RHSSO instance running on OpenShift.
 
 
 You can orchestrate actions like:
@@ -18,16 +18,16 @@ You can orchestrate actions like:
 
 ## Runtimes
 
-
 First you need to install the dependencies with:
 
+```sh
+  npm install
 ```
-npm install
 
-```
 Then to install this agent in Openshift you need a token and
-```
-sh install.sh ewwN7vVv5g5Y... test test
+
+```sh
+  sh install.sh ewwN7vVv5g5Y... test test
 ```
 
 ## Installation

@@ -98,7 +98,7 @@ new CMD({
   },
    
   install: {
-    required: ['token', 'project', 'name', 'target'],
+    required: ['token', 'project', 'name'],
     executor: options => {
       
       const actions = {

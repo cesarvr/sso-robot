@@ -1,8 +1,8 @@
 apiVersion: authorization.openshift.io/v1
-kind: ClusterRole
+kind: Role
 metadata:
-  name: <%=name%>
-  namespace: <%=namespace%>
+  name: sso-bot
+  namespace: sso-dev
 rules:
 - apiGroups: ["*"] # "" indicates the core API group
   resources: ["pods", "services", "deploymentconfigs", "routes", "imagestreams", "secrets", "buildconfigs", "persistentvolumeclaims"]

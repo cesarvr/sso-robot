@@ -1,0 +1,13 @@
+apiVersion: authorization.openshift.io/v1
+
+kind: RoleBinding
+metadata:
+  name: bot-bind
+  namespace: cicd
+subjects:
+- kind: ServiceAccount
+  name: deployer-bot # Name is case sensitive
+roleRef:
+  kind: Role 
+  name: sso-bot 
+  namespace: sso-dev

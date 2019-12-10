@@ -1,0 +1,12 @@
+apiVersion: authorization.openshift.io/v1
+kind: RoleBinding
+metadata:
+  name: <%=name%>
+  namespace: <%=project%>
+subjects:
+- kind: ServiceAccount
+  name: <%=service_account_name%> # Name is case sensitive
+roleRef:
+  kind: Role 
+  name: <%=role%> 
+  namespace: <%=project%>

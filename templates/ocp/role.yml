@@ -1,0 +1,9 @@
+apiVersion: authorization.openshift.io/v1
+kind: Role
+metadata:
+  name: <%=name%>
+  namespace: <%=project%>
+rules:
+- apiGroups: ["*"] # "" indicates the core API group
+  resources: ["pods", "services", "deploymentconfigs", "routes", "imagestreams", "secrets", "buildconfigs", "persistentvolumeclaims"]
+  verbs: ["get", "list", "watch", "create", "update", "patch"]
