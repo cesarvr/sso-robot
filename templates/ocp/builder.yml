@@ -19,5 +19,9 @@ spec:
     binary: {}
     type: Binary
   strategy:
-    dockerStrategy: {}
-    type: Docker
+    sourceStrategy:
+      from:
+        kind: ImageStreamTag
+        name: nodejs:10
+        namespace: openshift
+    type: Source
