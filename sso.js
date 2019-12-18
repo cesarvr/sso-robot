@@ -10,7 +10,7 @@ const Token = require('./lib/ocp/token')
 const CreateOKDProject = require('./lib/ocp/create')
 const OKDResourceTemplate = require('./lib/ocp/template')
 const ImageBuilder = require('./lib/ocp/image-builder')
-const { updateDeployment, createRobotCredentials, installOnOpenShfit, buildThisProject} = require('./lib/ocp/update')
+const { updateDeployment, createRobotCredentials, installOnOpenShfit, buildThisProject, watchDeployment} = require('./lib/ocp/update')
 const OKDTest  = require('./lib/ocp/find')
 const OKDRoute = require('./lib/ocp/routes')
 
@@ -124,9 +124,9 @@ new CMD({
   },
 
   route: {
-    required: ['token', 'project'],
+    required: ['name', 'token', 'project'],
     executor: (options) => {
-      OKDRoute(name, options.project, options.token)  
+      OKDRoute(options.params)  
     }
   },
 
@@ -141,7 +141,8 @@ new CMD({
           let okdCreator = new CreateOKDProject(simpleSSO)
 
           okdCreator.create(options.params)
-        }
+        },
+        watch: ()=> watchDeployment(options.params)
       }
 
       let exec = actions[options.resource]
@@ -160,7 +161,7 @@ new CMD({
     executor: (options) => {
 
       const actions = {
-        update: () => UpdateSSO(options.params),
+        update: () => updateDeployment(options.params),
         create: () => ImageBuilder(options.params)
       }
 
@@ -178,7 +179,7 @@ new CMD({
   },
 
   useThisImage: (name, image, project, token) => {
-    UpdateSSO(name, image, project, Token(token))
+    updateDeployment(name, image, project, Token(token))
   },
 
   "install-p": (name, project, token) => {
