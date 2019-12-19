@@ -26,8 +26,18 @@ First you need to install the dependencies with:
 
 Then to install this agent in Openshift you need a token and
 
+Syntax: 
+=====
+
 ```sh
-  sh install.sh ewwN7vVv5g5Y... test test
+node sso.js install robot --project=<project> --token=<openshift token> --name=<agent-name>
+```
+
+Example: 
+=====
+
+```sh
+node sso.js install robot --project=dme --token=M2gsjzRR_....euGxleM --name=sso-deployer
 ```
 
 ## Installation
