@@ -258,7 +258,7 @@ node sso.js post client --url=https://B-rhsso:443 --realm=demorealm --from-file=
 
 Basically this can be resumed in 3 stages:
 
-#### First
+#### First
 
 The first stage we unit test, package and deploy the SPI plugin into RHSSO, this deployment can be done by two ways:
 
