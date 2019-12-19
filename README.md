@@ -16,115 +16,124 @@ You can orchestrate actions like:
 - It does BuildConfig/ImageStream creation for custom RRHSSO image creation.
 - And is easy to extend.
 
-## Runtimes
-
-First you need to install the dependencies with:
-
-```sh
-  npm install
-```
-
-Then to install this agent in Openshift you need a token and
-
-Syntax: 
-=====
-
-```sh
-node sso.js install robot --project=<project> --token=<openshift token> --name=<agent-name>
-```
-
-Example: 
-=====
-
-```sh
-node sso.js install robot --project=dme --token=M2gsjzRR_....euGxleM --name=sso-deployer
-```
-
 ## Installation
 
-This bot is designed to deploy itself into an Openshift but first you need to do some manual configuration, first you need to setup an environment variable pointing to your *Openshift API server*:
+First you need to clone the project and add the environment variable (``OKD_SERVER``) pointing to your Openshift REST API: 
 
 - Windows:
 
 ```sh
-  set OKD_SERVER=https://my-openshift:443
+  npm install 
+  set OKD_SERVER=https://my-openshift.com
 ```
 
 - Linux:
 
 ```sh
-  export OKD_SERVER=https://my-openshift:443
+  npm install 
+  export OKD_SERVER=https://my-openshift.org
 ```
 
-To proceed to the installation you need to give it access to the cluster by providing a token, to get the token:
+Then you need a token from Openshift, you can obtain one by doing: 
 
 ```sh
   oc whoami -t
   #gdFfxkC7DEsBOfg...
 ```
 
-Now you can install it like this:
+Now you can install this ``bot`` like this:
 
 ```sh
-sh install.sh gdFfxkC7DEsBOfg... project project-target
+node sso.js install robot --project=my-project --token=M2gsjzRR_....euGxleM --name=my-rhsso-deployer
 ```
 
-The first parameter is the token, the second parameter is the project:
+This will deploy a instance of the bot in your Openshift, here is the meaning of the options: 
 
-  - **project:** Is the namespace where you want to deploy the bot, just make sure that the ``token`` has privilege to perform the require actions (can create) in that namespace/project.
+  - **project:** Is the namespace where you want to deploy the bot, just make sure that the ``token`` has privilege to perform the require actions (can create, watch, etc) in that namespace/project.
 
-  - **project-target:** Basically configure the bot to have permissions in a particular namespace.
+  - **name:** The name of the ``bot``. 
 
-## Example
 
-Let say we want to deploy this robot into the ``cicd`` namespace and we want to deploy/control RHSSO's instances on ``sso-dev`` namespace, to do that we install it the following way:
+If everything went correctly now your should have a bot (running inside a pod) waiting for instructions, but before you deploy anything you need to give it some permissions, if your ``token/user`` has permissions to create [roles](https://kubernetes.io/docs/reference/access-authn-authz/rbac/#api-overview) and [role-binding](https://kubernetes.io/docs/reference/access-authn-authz/rbac/#api-overview) via the REST API then you can do this:
 
 ```sh
-  sh install.sh gdFfxkC7DEsBOfg... cicd sso-dev
+node sso.js role new --token=M2gsjzRR_....euGxleM --name=my-rhsso-deployer --project=my-project 
 ```
 
 
 
-### What Does It Do
 
-Basically that ```install.sh``` script do the following things:
+## Now You Can Automate On RHSSO
 
-First [it creates some roles](https://github.com/cesarvr/sso-robot/blob/master/templates/ocp/robot-role.yml) that will allow the robot to perform the required activities such as deployment, observing, etc. On the ``sso-dev`` namespace.    
+### Deployments
+
+As we saw in the above example you can create one or multiple instance in a namespace (or various if you grant give it the correct roles): 
+
+You can run it locally: 
 
 ```sh
-node sso.js install roles --name=deployer-bot --token=$1 --project=$2 --target=$3 &&
+   node sso.js deploy create --token=M2gsjzRR_....uGxleM --name=sso73 --project=my-project
 ```
 
-Then it will build an image and deploy it into ``cicd`` namespace.
+This is a good choice if you want to do a quick test, but if you want to trigger this from some CI/CD framework, you can run it from the pod:
 
 ```sh
-node sso.js install robot --name=deployer-bot --token=$1 --project=$2 --target=$3 &&
-
-node sso.js install build --name=deployer-bot --token=$1 --project=$2 --target=$3
+   oc exec <pod-running-robot> -- node sso.js deploy create --name=sso73 --project=my-project
 ```
 
-### Local
+> Running it from the pod doesn't require the ``token`` or any other configuration as it will pick it up from the pod ``service account`` that share the same name as the bot. 
 
-You can also use it locally the only difference is that you will need to use your token for certain operations that involved calling the Openshift REST API:
 
-For example:
+### Custom Images 
+
+You can create custom images using the ``image create`` command: 
 
 ```sh
- node sso.js deploy create --name=sso73 --token=my-token --project=hello
+ node sso.js image create  --name=<image-name> --project=<your-project> --token=<only-if-you-are-using-it-locally>
 ```
 
-> When running in a Pod is not necessary to pass the token parameter, the bot takes the container token.
+This will create the Build Configuration that you can trigger by passing a Dockerfile, like this: 
 
-## Deploying/Building
+Say you have this Dockerfile: 
 
-Once the **sso-agent** is successfully deployed you will need to locate the pod, let say its called:
+```Dockerfile
+   FROM openshift-sso-73:latest # this get overrided by the build configuration.
 
-``sso-agent-xyz``
-
-By following the example above we can now deploy RHSSO in the ``sso-dev`` namespace:
+   ADD my-spi-plugins pt/eap/standalone/deployments/
+   
+   USER 1001
+```
 
 ```sh
-oc exec -n sso-dev sso-agent-xyz -- node sso.js deploy create --name=sso73  --project=hello
+ node sso.js image create  --name=rhsso-with-plugins --project=my-project --token=<only-if-you-are-using-it-locally>
+ oc start-build -n my-project --follow bc/rhsso-with-plugins --from-file=Dockerfile
+```
+
+This will build the image for you, let say we want to deploy this new image, in our previous example we created a RHSSO instance called ```sso73```, We want to reuse that configuration so let's replace that image with our new image that now include plugins: 
+
+```sh
+  node sso.js image update --name=sso73 --project=my-project --image=rhsso-with-plugins
+```
+
+
+Let's say we want to write a pipeline stage where we want to automate the creation of a custom image and we want to deploy this image and wait until the image is fully deploy:  
+
+
+```sh 
+
+        // Assume we clone a folder called tmp with a Dockerfile and some Keycloak plugins here...
+
+        stage('Creating & Deploying Image'){
+            steps {
+                script{
+                    sh "oc exec <pod-running-robot> -- node sso.js image create  --name=my-image --project=my-project"
+                    sh "oc exec <pod-running-robot> -- node sso.js image update --name=sso73 --project=my-project --image=my-image"
+                    sh "oc exec <pod-running-robot> -- node sso.js deploy watch --name=sso73 --project=my-project"
+                }
+            }
+        }
+        
+        stage('Run some test over this new instance...') //...
 ```
 
 ## Managing RHSSO/Keycloak Resources
