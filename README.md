@@ -154,11 +154,11 @@ First you need to define a file a simple realm structure like this one:
 
 ```json
 {
-	"id":"my-ad",
-	"realm":"my-ad",
-	"displayName": "Realm for Active Directory Users",
-	"displayNameHtml": "Active Directory Realm",
-	"enabled": true
+ "id":"my-ad",
+ "realm":"my-ad",
+ "displayName": "Realm for Active Directory Users",
+ "displayNameHtml": "Active Directory Realm",
+ "enabled": true
 }
 ```
 Let's call it ```realm.json``` and configure this into our ```sso73``` instance: 
