@@ -1,4 +1,4 @@
-# SSO-Robot
+ SSO-Robot
 
 Just a Openshift (operator like) written in Node.js to automate Red Hat Single Sign-On deployments and manage its resources.
 
@@ -92,9 +92,17 @@ You can create custom images using the ``image create`` command:
  node sso.js image create  --name=<image-name> --project=<your-project> --token=<only-if-you-are-using-it-locally>
 ```
 
-This will create the Build Configuration that you can trigger by passing a Dockerfile, like this: 
+-----
 
-Say you have this Dockerfile: 
+#### Example
+
+You can use this to create custom RHSSO images, here is an example on how to create a custom image with some theorethical plugins:
+
+
+##### Image Creation
+-----
+
+Let's say you have this Dockerfile, which add the plugins: 
 
 ```Dockerfile
    FROM openshift-sso-73:latest # this get overrided by the build configuration.
@@ -103,18 +111,103 @@ Say you have this Dockerfile:
    
    USER 1001
 ```
+To create the image you just need to run this: 
 
 ```sh
  node sso.js image create  --name=rhsso-with-plugins --project=my-project --token=<only-if-you-are-using-it-locally>
  oc start-build -n my-project --follow bc/rhsso-with-plugins --from-file=Dockerfile
 ```
 
-This will build the image for you, let say we want to deploy this new image, in our previous example we created a RHSSO instance called ```sso73```, We want to reuse that configuration so let's replace that image with our new image that now include plugins: 
+
+
+##### Custom Image Deployment
+-----
+
+We got our custom image let's deploy it, in our previous example we created a RHSSO instance called ```sso73``` let's reuse this instance by changing its **default** image with our **custom one**: 
 
 ```sh
-  node sso.js image update --name=sso73 --project=my-project --image=rhsso-with-plugins
+  node sso.js image update --name=sso73 --project=my-project --image=rhsso-with-plugins --token=<only-if-you-are-using-it-locally>
 ```
 
+
+### Watch Deployments
+
+If you want to track the deployment of the **custom one**: 
+
+```sh
+node sso.js deploy watch --name=sso73 --project=my-project --token=<only-if-you-are-using-it-locally>
+# Watching....
+
+# Do some test
+```
+
+This feature is very interesting if you are writing your own [Keycloak Plugins](https://github.com/keycloak/keycloak/tree/master/examples/providers/domain-extension), to automate test post-deployment. 
+
+Also this can be useful to automatically configure your RHSSO after it being deployed like adding some realms and clients. 
+
+
+### Adding Realms
+
+Now that our RHSSO is running and ready let's automate some realms and client creation let's start with realms: 
+
+First you need to define a file a simple realm structure like this one: 
+
+```json
+{
+	"id":"my-ad",
+	"realm":"my-ad",
+	"displayName": "Realm for Active Directory Users",
+	"displayNameHtml": "Active Directory Realm",
+	"enabled": true
+}
+```
+Let's call it ```realm.json``` and configure this into our ```sso73``` instance: 
+
+```sh
+ node sso.js post realm --url=https://my-project.sso73.org --from-file=realm.json 
+```
+
+
+### Adding Clients
+
+Adding a clients its more of the same first you need a file: 
+
+```json
+{
+  "clientId": "my-client",
+  "surrogateAuthRequired": false,
+  "enabled": true,
+  "clientAuthenticatorType": "client-secret"
+}
+```
+Let's call it ```client.json``` and configure this into our ```sso73``` instance: 
+
+```sh
+ node sso.js post client --url=https://my-project.sso73.org --from-file=client.json --realm=my-ad
+```
+
+
+### Copying Resources Between Instances 
+
+If you want to migrate objects from one instance to another you can use the ``get`` command: 
+
+```sh
+    node sso.js get client --name=ad-connector --url=https://old-rhsso.sso72.org --realm=my-old-realm >> client.json
+```
+
+This will copy the OpenID client called ``ad-connector`` from another instance into a file, now let's export this to our ``sso73`` instance: 
+
+```sh
+    node sso.js post client --url=https://my-project.sso73.org --from-file=client.json --realm=my-ad
+```
+
+You can use this with all supported resources. 
+
+
+
+
+
+### Pipeline Example 
 
 Let's say we want to write a pipeline stage where we want to automate the creation of a custom image and we want to deploy this image and wait until the image is fully deploy:  
 
@@ -136,130 +229,8 @@ Let's say we want to write a pipeline stage where we want to automate the creati
         stage('Run some test over this new instance...') //...
 ```
 
-## Managing RHSSO/Keycloak Resources
-
-This is Node.js extendable command line to automate Red Hat Single Sign-On (RHSSO) deployment configuration, image streams, build configuration, realms creation, clients, authentication (handy to test custom [Keycloak Providers](https://www.keycloak.org/docs/6.0/server_development/#_providers)), etc.
-
-## Keycloak Actions
-
-You can pull/post/find/filter the following resources from Keycloak/RHSSO:
-
-- Clients & Clients Secrets
-- Federation Plugins
-- Realms
-
-### Get
-
-To get a client for example:
-
-```sh
-node sso.js get client --project=sso-dev --url=<https://my-keycloak-instance> --realm=my-realm
-[{
-  clientId: 'my-client-1',
-  rootUrl: '',
-  adminUrl: '',
-  surrogateAuthRequired: false,
-  enabled: true,
-}]
-```
-
-### Searching
-
-Some cases if you don't remember the name of a particular service you can do a search:
-
-```sh
-node sso.js find client --project=sso-dev --url=https://my-rhsso-server --realm=demorealm --query=clientId=webapp1&enabled=true &&
-
-{
-  clientId: 'my-client-1',
-  rootUrl: '',
-  adminUrl: '',
-  surrogateAuthRequired: false,
-  enabled: true,
-}
-```
-### Filtering
-
-If you want to pull resources that follow a pattern you can:
-
-```sh
-node sso.js -filter <resource> <url> --key=value
-```
-
-Example:
-
-```sh
-node sso.js -filter client https://my-rhsso-server --clientId=my-client
-
-[
-    {
-      clientId: 'my-client-1',
-      rootUrl: '',
-      adminUrl: '',
-      surrogateAuthRequired: false,
-      enabled: true,
-    },
-    {
-      clientId: 'my-client-2',
-      rootUrl: '',
-      adminUrl: '',
-      surrogateAuthRequired: false,
-      enabled: true,
-    }
-]
-
-```
 
 ## What Can I Do With This ?
-
-### Automating The Deployment Of RHSSO
-
-Let's write a simple example where we want to automatically spin up a RHSSO instance (called ``sso73``) and we are going to add one realm called ``Demo`` and one a custom client called ``demo-1`` on the project ``sso-dev``.
-
-```sh
-  # First we create the project...
-  oc new-project sso-dev
-
-  # Create the RHSSO instance...
-  node sso.js deploy create --name=sso73 --token=my-token --project=hello
-```
-
-This will take a while depending on the machines and other factors, once the deployment is completed you can create the realm and client with:
-
-First the realm:
-
-```sh
-  node sso.js post realm --url=https://my-sso --from-file=realm.json
-```
-The ``realm.json`` should look something like this:
-
-```json
-{
-	"id":"demo",
-	"realm":"demo",
-	"displayName": "Demo",
-	"displayNameHtml": "Demo",
-	"enabled": true
-}
-```
-
-Next we can create the client that belong to the ``demo`` realm:
-
-```sh
-node sso.js post client --url=https://my-sso --realm=demo --from-file=client.json
-```
-
-Here is a quick look to ``client.json`` content:
-
-```json
-  {
-    "clientId": "demo-1",
-    "surrogateAuthRequired": false,
-    "enabled": true,
-    "clientAuthenticatorType": "client-secret"
-  }
-```
-
 
 
 ### Migrating client configuration
