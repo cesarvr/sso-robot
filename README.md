@@ -1,4 +1,4 @@
- SSO-Robot
+# SSO-Robot
 
 Just a Openshift (operator like) written in Node.js to automate Red Hat Single Sign-On deployments and manage its resources.
 
