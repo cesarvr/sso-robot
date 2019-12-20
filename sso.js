@@ -1,14 +1,14 @@
-const _ = require('lodash')
-const CMD = require('./lib/cmd')
-const Clean = require('./lib/clean')
-const OAuth2 = require('./lib/oauth2')
+const _         = require('lodash')
+const CMD       = require('./lib/cmd')
+const Clean     = require('./lib/clean')
+const OAuth2    = require('./lib/oauth2')
 const Utilities = require('./lib/tools')
 
 const KeycloakFactory = require('./lib/keycloak')
 
 const ssecure_service = require('./lib/secure_service_tester')
 const install = require('./lib/ocp/install')
-const credentials = require('./lib/ocp/credentials')
+const Credentials = require('./lib/ocp/credentials')
 const build = require('./lib/ocp/build')
 const watch = require('./lib/ocp/watch')
 const Token = require('./lib/ocp/token')
@@ -102,25 +102,52 @@ new CMD({
     }
   },
 
+  role: {
+    required: ['token', 'project', 'service_account'],
+    executor: options => {
+      let credentials = new Credentials(options.params)
+
+      const CLUSTER_ROLE_TEMPLATES = {
+          Role: './templates/ocp/role/cluster-role.yml',
+          Binding: './templates/ocp/role/cluster-binding.yml'
+      }
+
+      const ROLE_TEMPLATES = {
+          Role: './templates/ocp/role/role.yml',
+          Binding: './templates/ocp/role/binding.yml'
+      }
+
+      const actions = {
+        cluster: () => credentials.setup(CLUSTER_ROLE_TEMPLATES).then(done => console.log('ClusterRoles has been updated')),
+        new: () => credentials.setup(ROLE_TEMPLATES).then(done => console.log('Roles has been updated')),      
+      }
+    
+      Utilities.chooseYourPath(actions, options)
+    }
+  },
+
   install: {
     required: ['token', 'project', 'name'],
     executor: options => {
 
+      let credentials = new Credentials(options.params)
+     
       const actions = {
-        robot: () => install.onOpenShift(options.params).then(build.robot),
+        robot: () => credentials.setupServiceAccount(options.params.name)
+                                .then( done => install.onOpenShift(options.params)
+                                .then( build.robot(options.params) ) ),
+
         roles: () => createRobotCredentials(options.params),
-        build: () => build.robot(options.params)
-      }
 
-      let exec = actions[options.resource]
-
-      if(!_.isUndefined(exec))
-        exec()
-      else
-      {
-        console.log(`Command not found try: node sso.js -image [${Object.keys(actions).join(', ')}]`)
+        build: () => { 
+          console.log('creating a new container...')
+          build.robot(options.params) 
+        }
       }
+      
+      Utilities.chooseYourPath(actions, options)  
     }
+    
   },
 
   test: {
@@ -150,14 +177,7 @@ new CMD({
         watch: ()=> watch.dc(options.params)
       }
 
-      let exec = actions[options.resource]
-
-      if(!_.isUndefined(exec))
-        exec()
-      else
-      {
-        console.log(`Command not found try: node sso.js -image [${Object.keys(actions).join(', ')}]`)
-      }
+      Utilities.chooseYourPath(actions, options)
     }
   },
 
@@ -170,14 +190,7 @@ new CMD({
         create: () => ImageBuilder(options.params)
       }
 
-      let exec = actions[options.resource]
-
-      if(!_.isUndefined(exec))
-        exec()
-      else
-      {
-        console.log(`Command not found try: node sso.js -image [${Object.keys(actions).join(', ')}]`)
-      }
+      Utilities.chooseYourPath(actions, options)
     }
   },
 

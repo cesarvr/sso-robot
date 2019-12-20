@@ -1,0 +1,8 @@
+apiVersion: authorization.openshift.io/v1
+kind: ClusterRole
+metadata:
+  name: <%=name%>
+rules:
+- apiGroups: ["*"] # "" indicates the core API group
+  resources: ["pods", "services", "deploymentconfigs", "routes", "imagestreams", "secrets", "buildconfigs", "persistentvolumeclaims"]
+  verbs: ["get", "list", "watch", "create", "update", "patch"]
