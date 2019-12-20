@@ -54,22 +54,40 @@ This will deploy a instance of the bot in your Openshift, here is the meaning of
   - **name:** The name of the ``bot``. 
 
 
-If everything went correctly now your should have a bot (running inside a pod) waiting for instructions, but before you deploy anything you need to give it some permissions, if your ``token/user`` has permissions to create [roles](https://kubernetes.io/docs/reference/access-authn-authz/rbac/#api-overview) and [role-binding](https://kubernetes.io/docs/reference/access-authn-authz/rbac/#api-overview) via the REST API then you can do this:
+If everything went correctly now your should have a bot (running inside a pod) waiting for instructions, but before you deploy anything you need to give it some permissions. 
+
+If your ``token/user`` has permissions to create [roles](https://kubernetes.io/docs/reference/access-authn-authz/rbac/#api-overview) and [role-binding](https://kubernetes.io/docs/reference/access-authn-authz/rbac/#api-overview) then you can apply permissions like this:
 
 ```sh
 node sso.js role new --token=M2gsjzRR_....euGxleM --name=my-rhsso-deployer --project=my-project 
 ```
 
+> This basically grant the container permissions to deploy RHSSO in the selected namespace. 
 
 
 
-## Now You Can Automate On RHSSO
+## How It Works
+
+You can automate task in two ways you can call use this tool locally like this: 
+
+```sh
+  export OKD_SERVER=https://your-openshift-api.org
+  node sso.js deploy create --token=M2gsjzRR_....uGxleM --name=sso73 --project=my-project
+```
+
+Or you can run it from the container after the installation: 
+
+```sh
+   oc exec <pod-running-robot> -- node sso.js deploy create --name=sso73 --project=my-project
+```
+
+The main difference here is that when running in the pod it won't require any extra configuration and you don't need to provide the ``--token`` parameter because the token is obtained through the [pod service account](https://kubernetes.io/docs/reference/access-authn-authz/service-accounts-admin/#user-accounts-vs-service-accounts). 
+
+## Automating..
 
 ### Deployments
 
-As we saw in the above example you can create one or multiple instance in a namespace (or various if you grant give it the correct roles): 
-
-You can run it locally: 
+Deploying an RHSSO instance: 
 
 ```sh
    node sso.js deploy create --token=M2gsjzRR_....uGxleM --name=sso73 --project=my-project
@@ -96,13 +114,13 @@ You can create custom images using the ``image create`` command:
 
 #### Example
 
-You can use this to create custom RHSSO images, here is an example on how to create a custom image with some theorethical plugins:
+You can use this to create custom RHSSO images, here is an example on how to create a custom image with some plugins:
 
 
 ##### Image Creation
 -----
 
-Let's say you have this Dockerfile, which add the plugins: 
+Let's say you want to create a custom RHSSO image using the official Red Hat image that comes with Openshift. The first thing you need is a Dockerfile like this one:  
 
 ```Dockerfile
    FROM openshift-sso-73:latest # this get overrided by the build configuration.
@@ -111,26 +129,30 @@ Let's say you have this Dockerfile, which add the plugins:
    
    USER 1001
 ```
-To create the image you just need to run this: 
+Then you can start by creating the build configuration like this: 
 
 ```sh
  node sso.js image create  --name=rhsso-with-plugins --project=my-project --token=<only-if-you-are-using-it-locally>
- oc start-build -n my-project --follow bc/rhsso-with-plugins --from-file=Dockerfile
 ```
 
+Assuming that the Dockerfile is in a folder called ``build`` along with the plugins, you can trigger a the build above by using this ``oc`` command: 
 
+```sh
+ oc start-build -n my-project --follow bc/rhsso-with-plugins --from-file=Dockerfile
+```
 
 ##### Custom Image Deployment
 -----
 
-We got our custom image let's deploy it, in our previous example we created a RHSSO instance called ```sso73``` let's reuse this instance by changing its **default** image with our **custom one**: 
+Now that we have an image we can reuse our previous deployment configuration ```sso73``` by updating the **default** image with our **custom one**: 
 
 ```sh
-  node sso.js image update --name=sso73 --project=my-project --image=rhsso-with-plugins --token=<only-if-you-are-using-it-locally>
+ oc exec <pod-running-robot> -- node sso.js image update --name=sso73 --project=my-project --image=rhsso-with-plugins 
 ```
 
+This image updated will trigger a deployment, so its a good idea to watch that. 
 
-### Watch Deployments
+### Watching Deployments
 
 If you want to track the deployment of the **custom one**: 
 
