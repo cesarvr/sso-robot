@@ -1,93 +1,92 @@
 # SSO-Robot
 
-Just a Openshift (operator like) written in Node.js to automate Red Hat Single Sign-On deployments and resource managment. 
+I wrote this plugin because I wanted to automate the testing and deployment of Keycloak and Keycloak custom components in Openshift.  
 
-![](https://github.com/cesarvr/sso-robot/blob/master/img/how-to-use.png?raw=true)
-
-I wrote this to simplify the process of writing plugins in SSO, with this *operator* you should be able to write your plugin locally and automate its deployment into a RHSSO instance running on OpenShift.
-
-
-You can orchestrate actions like:
+You install this robot in your OpenShift cluster and then you can make calls from Jenkins using ``oc exec <pod-name> -- node sso.bot <actions>`` to perform actions like:  
 
 - Deployment of Red Hat Single Sign-On (RHSSO). (Ephemeral or MySQL backed)
 - SPI configuration like Federation/Storage plugins.
-- OpenID authentication using (Direct Grant style), so you can test your plugin.
+- OpenID authentication using Direct Grant style, handy to automate the testing of custom Keycloak plugins.
 - Automate the creation of clients and realms.
 - It does BuildConfig/ImageStream creation for custom RRHSSO image creation.
 - And is easy to extend.
 
+
+![](https://github.com/cesarvr/sso-robot/blob/master/img/how-to-use.png?raw=true)
+
+
+
+
 ## Installation
 
-First you need to clone the project and add the environment variable (``OKD_SERVER``) pointing to your Openshift REST API: 
+First you need to clone the project and add the environment variable (``OKD_SERVER``) pointing to your Openshift REST API:
 
 - Windows:
 
 ```sh
-  npm install 
+  npm install
   set OKD_SERVER=https://my-openshift.com
 ```
 
 - Linux:
 
 ```sh
-  npm install 
+  npm install
   export OKD_SERVER=https://my-openshift.org
 ```
 
-Then you need a token from Openshift, you can obtain one by doing: 
+Then you need a token from Openshift, you can obtain one by doing:
 
 ```sh
   oc whoami -t
   #gdFfxkC7DEsBOfg...
 ```
 
-Now you can install this ``bot`` like this:
+Now you can install it like this:
 
 ```sh
-node sso.js install robot --project=my-project --token=M2gsjzRR_....euGxleM --name=my-rhsso-deployer
+ node sso.js install robot --project=my-project --token=gdFfxkC7DEsBOfg.... --name=my-keycloak-deployer
 ```
 
-This will deploy a instance of the bot in your Openshift, here is the meaning of the options: 
+Where:
 
   - **project:** Is the namespace where you want to deploy the bot, just make sure that the ``token`` has privilege to perform the require actions (can create, watch, etc) in that namespace/project.
 
-  - **name:** The name of the ``bot``. 
+  - **name:** The name of the ``bot``.
 
-
-If everything went correctly now your should have a bot (running inside a pod) waiting for instructions, but before you deploy anything you need to give it some permissions. 
+If everything went correctly now your should have a bot (running inside a pod) waiting for instructions, but before you deploy anything you need to give it some permissions.
 
 If your ``token/user`` has permissions to create [roles](https://kubernetes.io/docs/reference/access-authn-authz/rbac/#api-overview) and [role-binding](https://kubernetes.io/docs/reference/access-authn-authz/rbac/#api-overview) then you can apply permissions like this:
 
 ```sh
-node sso.js role new --token=M2gsjzRR_....euGxleM --name=my-rhsso-deployer --project=my-project 
+node sso.js role new --token=gdFfxkC7DEsBOfg.... --name=my-keycloak-deployer --project=my-project
 ```
 
-> This basically grant the container permissions to deploy RHSSO in the selected namespace. 
-
+> This basically grant the container permissions to deploy RHSSO in the selected namespace.
 
 
 ## How It Works
 
-You can automate task in two ways you can call use this tool locally like this: 
+You can automate task in two ways you can call use this tool locally like this:
 
 ```sh
   export OKD_SERVER=https://your-openshift-api.org
   node sso.js deploy create --token=M2gsjzRR_....uGxleM --name=sso73 --project=my-project
 ```
 
-Or you can run it from the container after the installation: 
+Or you can run it from the container after the installation:
 
 ```sh
    oc exec <pod-running-robot> -- node sso.js deploy create --name=sso73 --project=my-project
 ```
 
-The main difference here is that when running in the pod it won't require any extra configuration and you don't need to provide the ``--token`` parameter because the token is obtained through the [pod service account](https://kubernetes.io/docs/reference/access-authn-authz/service-accounts-admin/#user-accounts-vs-service-accounts). 
+The main difference here is that when running in the pod it won't require any extra configuration and you don't need to provide the ``--token`` parameter because the token is obtained through the [pod service account](https://kubernetes.io/docs/reference/access-authn-authz/service-accounts-admin/#user-accounts-vs-service-accounts).
 
 ## Automating..
 
 ### Deployments
 
-Deploying an RHSSO instance: 
+Deploying an RHSSO instance:
 
 ```sh
    node sso.js deploy create --token=M2gsjzRR_....uGxleM --name=sso73 --project=my-project
@@ -99,12 +98,12 @@ This is a good choice if you want to do a quick test, but if you want to trigger
    oc exec <pod-running-robot> -- node sso.js deploy create --name=sso73 --project=my-project
 ```
 
-> Running it from the pod doesn't require the ``token`` or any other configuration as it will pick it up from the pod ``service account`` that share the same name as the bot. 
+> Running it from the pod doesn't require the ``token`` or any other configuration as it will pick it up from the pod ``service account`` that share the same name as the bot.
 
 
-### Custom Images 
+### Custom Images
 
-You can create custom images using the ``image create`` command: 
+You can create custom images using the ``image create`` command:
 
 ```sh
  node sso.js image create  --name=<image-name> --project=<your-project> --token=<only-if-you-are-using-it-locally>
@@ -126,16 +125,16 @@ Let's say you want to create a custom RHSSO image using the official Red Hat ima
    FROM openshift-sso-73:latest # this get overrided by the build configuration.
 
    ADD my-spi-plugins pt/eap/standalone/deployments/
-   
+
    USER 1001
 ```
-Then you can start by creating the build configuration like this: 
+Then you can start by creating the build configuration like this:
 
 ```sh
  node sso.js image create  --name=rhsso-with-plugins --project=my-project --token=<only-if-you-are-using-it-locally>
 ```
 
-Assuming that the Dockerfile is in a folder called ``build`` along with the plugins, you can trigger a the build above by using this ``oc`` command: 
+Assuming that the Dockerfile is in a folder called ``build`` along with the plugins, you can trigger a the build above by using this ``oc`` command:
 
 ```sh
  oc start-build -n my-project --follow bc/rhsso-with-plugins --from-file=Dockerfile
@@ -144,17 +143,17 @@ Assuming that the Dockerfile is in a folder called ``build`` along with the plug
 ##### Custom Image Deployment
 -----
 
-Now that we have an image we can reuse our previous deployment configuration ```sso73``` by updating the **default** image with our **custom one**: 
+Now that we have an image we can reuse our previous deployment configuration ```sso73``` by updating the **default** image with our **custom one**:
 
 ```sh
- oc exec <pod-running-robot> -- node sso.js image update --name=sso73 --project=my-project --image=rhsso-with-plugins 
+ oc exec <pod-running-robot> -- node sso.js image update --name=sso73 --project=my-project --image=rhsso-with-plugins
 ```
 
-This image updated will trigger a deployment, so its a good idea to watch that. 
+This image updated will trigger a deployment, so its a good idea to watch that.
 
 ### Watching Deployments
 
-If you want to track the deployment of the **custom one**: 
+If you want to track the deployment of the **custom one**:
 
 ```sh
 node sso.js deploy watch --name=sso73 --project=my-project --token=<only-if-you-are-using-it-locally>
@@ -163,16 +162,16 @@ node sso.js deploy watch --name=sso73 --project=my-project --token=<only-if-you-
 # Do some test
 ```
 
-This feature is very interesting if you are writing your own [Keycloak Plugins](https://github.com/keycloak/keycloak/tree/master/examples/providers/domain-extension), to automate test post-deployment. 
+This feature is very interesting if you are writing your own [Keycloak Plugins](https://github.com/keycloak/keycloak/tree/master/examples/providers/domain-extension), to automate test post-deployment.
 
-Also this can be useful to automatically configure your RHSSO after it being deployed like adding some realms and clients. 
+Also this can be useful to automatically configure your RHSSO after it being deployed like adding some realms and clients.
 
 
 ### Adding Realms
 
-Now that our RHSSO is running and ready let's automate some realms and client creation let's start with realms: 
+Now that our RHSSO is running and ready let's automate some realms and client creation let's start with realms:
 
-First you need to define a file a simple realm structure like this one: 
+First you need to define a file a simple realm structure like this one:
 
 ```json
 {
@@ -183,16 +182,16 @@ First you need to define a file a simple realm structure like this one:
  "enabled": true
 }
 ```
-Let's call it ```realm.json``` and configure this into our ```sso73``` instance: 
+Let's call it ```realm.json``` and configure this into our ```sso73``` instance:
 
 ```sh
- node sso.js post realm --url=https://my-project.sso73.org --from-file=realm.json 
+ node sso.js post realm --url=https://my-project.sso73.org --from-file=realm.json
 ```
 
 
 ### Adding Clients
 
-Adding a clients its more of the same first you need a file: 
+Adding a clients its more of the same first you need a file:
 
 ```json
 {
@@ -202,39 +201,39 @@ Adding a clients its more of the same first you need a file:
   "clientAuthenticatorType": "client-secret"
 }
 ```
-Let's call it ```client.json``` and configure this into our ```sso73``` instance: 
+Let's call it ```client.json``` and configure this into our ```sso73``` instance:
 
 ```sh
  node sso.js post client --url=https://my-project.sso73.org --from-file=client.json --realm=my-ad
 ```
 
 
-### Copying Resources Between Instances 
+### Copying Resources Between Instances
 
-If you want to migrate objects from one instance to another you can use the ``get`` command: 
+If you want to migrate objects from one instance to another you can use the ``get`` command:
 
 ```sh
     node sso.js get client --name=ad-connector --url=https://old-rhsso.sso72.org --realm=my-old-realm >> client.json
 ```
 
-This will copy the OpenID client called ``ad-connector`` from another instance into a file, now let's export this to our ``sso73`` instance: 
+This will copy the OpenID client called ``ad-connector`` from another instance into a file, now let's export this to our ``sso73`` instance:
 
 ```sh
     node sso.js post client --url=https://my-project.sso73.org --from-file=client.json --realm=my-ad
 ```
 
-You can use this with all supported resources. 
+You can use this with all supported resources.
 
 
 
 
 
-### Pipeline Example 
+### Pipeline Example
 
 Let's say we want to write a pipeline stage where we want to automate the creation of a custom image and we want to deploy this image and wait until the image is fully deploy:  
 
 
-```sh 
+```sh
 
         // Assume we clone a folder called tmp with a Dockerfile and some Keycloak plugins here...
 
@@ -247,7 +246,7 @@ Let's say we want to write a pipeline stage where we want to automate the creati
                 }
             }
         }
-        
+
         stage('Run some test over this new instance...') //...
 ```
 
